@@ -1,11 +1,31 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <!-- 基础应用主题 -->
+    <style name="BaseTheme" parent="@android:style/Theme.Holo.Light"></style>
+
+    <style name="BaseActionBar" parent="@android:style/Widget.ActionBar"></style>
+
+    <style name="BaseTTitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/colorWhite</item>
     </style>
 
+    <style name="AppTheme" parent="@style/BaseTheme">
+        <!-- Customize your theme here. -->
+        <item name="android:actionBarStyle">@style/MainActionBar</item>
+    </style>
+    <!--自定义的ActionBar-->
+    <style name="MainActionBar" parent="@style/BaseActionBar">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:titleTextStyle">@style/BaseTTitleTextStyle</item>
+    </style>
+    <!-- 设置界面的Theme样式-->
+    <style name="SettingTheme" parent="@style/BaseTheme">
+        <item name="android:actionBarStyle">@style/SettingActionBar</item>
+    </style>
+
+    <style name="SettingActionBar" parent="@style/BaseActionBar">
+        <item name="android:logo">@null</item>
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:titleTextStyle">@style/BaseTTitleTextStyle</item>
+    </style>
 </resources>
