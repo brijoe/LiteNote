@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--应用主色 -->
+    <!--应用主色 用于ActionBar-->
     <color name="colorPrimary">#7676BC</color>
+    <!--通过的白色 -->
     <color name="colorWhite">#ffffff</color>
+    <!-- 设置界面-->
+    <color name="divider_line_color">#CFCFCF</color>
+    <color name="setting_press">#dadada</color>
+    <color name="proudly_color">#7E7E7E</color>
 </resources>

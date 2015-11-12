@@ -17,9 +17,15 @@
         </activity>
         <activity
             android:name=".SettingActivity"
-            android:label="@string/setting"
             android:icon="@null"
-            android:theme="@style/SettingTheme"></activity>
+            android:label="@string/setting"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/SettingTheme">
+            <!-- Parent activity meta-data to support API level 7+ -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
         <activity android:name=".PubActivity"></activity>
     </application>
 

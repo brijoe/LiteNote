@@ -27,5 +27,6 @@
         <item name="android:logo">@null</item>
         <item name="android:background">@color/colorPrimary</item>
         <item name="android:titleTextStyle">@style/BaseTTitleTextStyle</item>
+        <item name="android:displayOptions">none|showTitle</item>
     </style>
 </resources>

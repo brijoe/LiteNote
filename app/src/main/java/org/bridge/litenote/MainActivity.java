@@ -2,6 +2,7 @@ package org.bridge.litenote;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,13 +35,25 @@ public class MainActivity extends Activity {
             case R.id.action_setting://打开设置界面
                 Logger.i(TAG, "点击了设置界面");
                 i.setClass(this, SettingActivity.class);
+                startActivity(i);//页面跳转
                 break;
             case R.id.action_feedback://添加反馈
+                startSendEmailIntent();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
         }
-        startActivity(i);//页面跳转
         return true;
+    }
+
+    /**
+     * 发送反馈邮件的方法
+     */
+    private void startSendEmailIntent() {
+        Intent data = new Intent(Intent.ACTION_SENDTO);
+        data.setData(Uri.parse("mailto:1650730996@qq.com"));
+        data.putExtra(Intent.EXTRA_SUBJECT, "反馈");
+        data.putExtra(Intent.EXTRA_TEXT, "输入您的意见或建议！");
+        startActivity(data);
     }
 }

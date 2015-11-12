@@ -2,4 +2,11 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <!-- 设置界面的尺寸样式-->
+    <dimen name="divider_line_height">1px</dimen>
+    <dimen name="proud_text_size">11sp</dimen>
+    <dimen name="proud_margin_bottom">15dp</dimen>
+    <dimen name="setting_panel_height">55dp</dimen>
+    <dimen name="setting_image">25dp</dimen>
+    <dimen name="arrow_size">20dp</dimen>
 </resources>
