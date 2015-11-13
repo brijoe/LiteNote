@@ -95,6 +95,7 @@
             android:layout_height="@dimen/setting_panel_height"
             android:background="@drawable/setting_item"
             android:clickable="true"
+            android:onClick="startCommitIntent"
             android:orientation="horizontal"
             android:paddingLeft="10dp"
             android:paddingRight="10dp">
