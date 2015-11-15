@@ -7,7 +7,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name">
         <activity
-            android:name=".MainActivity"
+            android:name="org.bridge.activity.MainActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -16,17 +16,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SettingActivity"
+            android:name="org.bridge.activity.SettingActivity"
             android:icon="@null"
             android:label="@string/setting"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/SettingTheme">
-            <!-- Parent activity meta-data to support API level 7+ -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-        <activity android:name=".PubActivity"></activity>
+            android:theme="@style/SettingTheme"></activity>
+        <activity
+            android:name="org.bridge.activity.PubActivity"
+            android:label="@string/pub_note"
+            android:theme="@style/PubTheme"></activity>
     </application>
 
 </manifest>

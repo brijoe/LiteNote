@@ -5,18 +5,19 @@
 
     <style name="BaseActionBar" parent="@android:style/Widget.ActionBar"></style>
 
-    <style name="BaseTTitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+    <style name="BaseTitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
         <item name="android:textColor">@color/colorWhite</item>
     </style>
 
     <style name="AppTheme" parent="@style/BaseTheme">
         <!-- Customize your theme here. -->
         <item name="android:actionBarStyle">@style/MainActionBar</item>
+        <item name="android:windowActionBarOverlay">true</item>
     </style>
     <!--自定义的ActionBar-->
     <style name="MainActionBar" parent="@style/BaseActionBar">
         <item name="android:background">@color/colorPrimary</item>
-        <item name="android:titleTextStyle">@style/BaseTTitleTextStyle</item>
+        <item name="android:titleTextStyle">@style/BaseTitleTextStyle</item>
     </style>
     <!-- 设置界面的Theme样式-->
     <style name="SettingTheme" parent="@style/BaseTheme">
@@ -24,9 +25,26 @@
     </style>
 
     <style name="SettingActionBar" parent="@style/BaseActionBar">
-        <item name="android:logo">@null</item>
         <item name="android:background">@color/colorPrimary</item>
-        <item name="android:titleTextStyle">@style/BaseTTitleTextStyle</item>
+        <item name="android:titleTextStyle">@style/BaseTitleTextStyle</item>
         <item name="android:displayOptions">none|showTitle</item>
     </style>
+    <!--添加Note界面Theme样式-->
+    <style name="PubTheme" parent="@style/BaseTheme">
+        <item name="android:actionBarStyle">@style/PubActionBar</item>
+        <item name="android:windowAnimationStyle">@style/PubAnimation</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="PubActionBar" parent="@style/BaseActionBar">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:titleTextStyle">@style/BaseTitleTextStyle</item>
+        <item name="android:displayOptions">none|showTitle</item>
+    </style>
+
+    <style name="PubAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/pub_pull_in</item>
+        <item name="android:activityCloseExitAnimation">@anim/pub_pull_out</item>
+    </style>
+
 </resources>

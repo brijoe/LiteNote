@@ -2,8 +2,12 @@
 <resources>
     <!--应用主色 用于ActionBar-->
     <color name="colorPrimary">#7676BC</color>
-    <!--通过的白色 -->
+    <!--通用的白色 -->
     <color name="colorWhite">#ffffff</color>
+    <color name="colorGray">#B1B1B1</color>
+    <color name="plus_color">#B6B6B4</color>
+    <color name="grid_date_color">#B1B1B1</color>
+    <color name="memo_date_color">#7E7E7E</color>
     <!-- 设置界面-->
     <color name="divider_line_color">#CFCFCF</color>
     <color name="setting_press">#dadada</color>

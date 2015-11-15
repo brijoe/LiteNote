@@ -1,13 +1,16 @@
-package org.bridge.litenote;
+package org.bridge.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
-public class SettingActivity extends Activity {
+import org.bridge.litenote.R;
+
+public class SettingActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,5 +30,15 @@ public class SettingActivity extends Activity {
         Intent localIntent = new Intent("android.intent.action.VIEW");
         localIntent.setData(Uri.parse(str));
         startActivity(localIntent);
+    }
+
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onMenuItemSelected(featureId, item);
     }
 }
