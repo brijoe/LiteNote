@@ -18,7 +18,7 @@ public class BaseActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         Logger.i(TAG, CLASSNAME + "-onCreate");
         super.onCreate(savedInstanceState);
-        setStatusBar();
+       // setStatusBar();
     }
 
     @Override

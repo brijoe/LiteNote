@@ -1,6 +1,7 @@
 package org.bridge.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.bridge.activity.PubActivity;
 import org.bridge.entry.NoteEntry;
 import org.bridge.activity.MainActivity;
 import org.bridge.litenote.R;
@@ -57,6 +59,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     Toast.makeText(context, "点击了item", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(context, PubActivity.class);
                 }
             });
             cardNote.setOnLongClickListener(new View.OnLongClickListener() {
