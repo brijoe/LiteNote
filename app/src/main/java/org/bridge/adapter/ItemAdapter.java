@@ -49,7 +49,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (position > 0) {
-            NoteEntry noteEntry = items.get(position - 1);
+            final NoteEntry noteEntry = items.get(position - 1);
             TextView tvContent = ((NoteItemViewHolder) holder).getTvContent();
             TextView tvPubDate = ((NoteItemViewHolder) holder).getTvPudDate();
             View cardNote = ((NoteItemViewHolder) holder).getCardNote();
@@ -60,6 +60,8 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 public void onClick(View v) {
                     Toast.makeText(context, "点击了item", Toast.LENGTH_SHORT).show();
                     Intent i = new Intent(context, PubActivity.class);
+                    i.putExtra("NoteItem", noteEntry);
+                    context.startActivity(i);
                 }
             });
             cardNote.setOnLongClickListener(new View.OnLongClickListener() {

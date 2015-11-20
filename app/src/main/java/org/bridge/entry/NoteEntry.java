@@ -4,9 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by bridgegeorge on 15/11/14.
+ * 实现NoteEntry的实体类，提供getter/setter方法，和序列化方法
  */
-public class NoteEntry implements Parcelable{
+public class NoteEntry implements Parcelable {
     private int id;
     private String content;
     private String pubDate;
@@ -35,6 +35,18 @@ public class NoteEntry implements Parcelable{
         }
     };
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(content);
+        dest.writeString(pubDate);
+    }
+
     public int getId() {
         return id;
     }
@@ -57,17 +69,5 @@ public class NoteEntry implements Parcelable{
 
     public void setPubDate(String pubDate) {
         this.pubDate = pubDate;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(content);
-        dest.writeString(pubDate);
     }
 }
