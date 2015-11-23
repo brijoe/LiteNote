@@ -15,19 +15,21 @@ import org.bridge.activity.PubActivity;
 import org.bridge.entry.NoteEntry;
 import org.bridge.activity.MainActivity;
 import org.bridge.litenote.R;
+import org.bridge.util.DateUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created by bridgegeorge on 15/11/13.
+ * 装载Note数据的适配器类
  */
-public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class NoteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_ADD = 0;
     private static final int TYPE_NOTE = 1;
-    private ArrayList<NoteEntry> items = new ArrayList<>();
+    private List<NoteEntry> items = new ArrayList<>();
     private Context context;
 
-    public ItemAdapter(Context context, ArrayList<NoteEntry> items) {
+    public NoteItemAdapter(Context context, List<NoteEntry> items) {
         this.context = context;
         this.items = items;
     }
@@ -54,7 +56,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             TextView tvPubDate = ((NoteItemViewHolder) holder).getTvPudDate();
             View cardNote = ((NoteItemViewHolder) holder).getCardNote();
             tvContent.setText(noteEntry.getContent());
-            tvPubDate.setText(noteEntry.getPubDate());
+            tvPubDate.setText(DateUtil.formatTime(noteEntry.getPubDate()));
             cardNote.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

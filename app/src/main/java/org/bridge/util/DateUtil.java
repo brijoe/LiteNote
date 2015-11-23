@@ -5,11 +5,28 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * 此类用于格式化时间显示
+ * 格式化时间显示类
  */
 public class DateUtil {
     private static final String TAG = "DateUtil";
 
+    /**
+     * 按照格式获取当前时间
+     *
+     * @return 格式化后的当前时间
+     */
+    public static String getCurrentTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//日期格式
+        Date now = new Date();//当前时间
+        return sdf.format(now);
+    }
+
+    /**
+     * 计算当前时间与传入时间的差值，并格式化返回
+     *
+     * @param time
+     * @return 格式化后的时间差
+     */
     public static String formatTime(String time) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//日期格式
         Date now = new Date();//当前时间

@@ -1,7 +1,6 @@
 package org.bridge.activity;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,35 +10,61 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.WindowManager;
 
-import org.bridge.adapter.ItemAdapter;
+import org.bridge.adapter.NoteItemAdapter;
+import org.bridge.db.LiteNoteDB;
 import org.bridge.entry.NoteEntry;
 import org.bridge.litenote.R;
 import org.bridge.util.Logger;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends BaseActivity {
     String TAG = "info";
+    /**
+     * 指定菜单项要跳转的Intent
+     */
     private Intent i = new Intent();
+    /**
+     * 用于构造卡片布局的RecyclerView
+     */
     private RecyclerView mRecyclerView;
-    private ItemAdapter mAdapter;
+    /**
+     * 用于指定RecyclerView布局的布局管理器
+     */
     private RecyclerView.LayoutManager mLayoutManager;
-    private ArrayList<NoteEntry> items = new ArrayList<>();
+    /**
+     * NoteItem适配器
+     */
+    private NoteItemAdapter mAdapter;
+    /**
+     * NoteItem数据对象列表
+     */
+    private List<NoteEntry> items = new ArrayList<>();
+    /**
+     * 当前Activity 的ActionBar 对象
+     */
     private ActionBar actionBar;
+    /**
+     * 需要初始化的DB对象
+     */
+    private LiteNoteDB liteNoteDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         actionBar = getActionBar();
+        init();
 
-        initView();
     }
 
     private void initView() {
+
+    }
+
+    private void init() {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         //列数为两列
@@ -48,44 +73,25 @@ public class MainActivity extends BaseActivity {
                 spanCount,
                 StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        //构建一个临时数据源
+        //创建一个数据库实例
+        liteNoteDB = LiteNoteDB.getInstance(this);
+        //构建一个数据源
         initData();
-        mAdapter = new ItemAdapter(this, items);
+        mAdapter = new NoteItemAdapter(this, items);
         mRecyclerView.setAdapter(mAdapter);
     }
 
     //初始化数据
     private void initData() {
-        NoteEntry note1 = new NoteEntry(1, "数据1", "一天前");
-        NoteEntry note2 = new NoteEntry(2, "今天好开心啊，可以约会啪啪啪了,我有一个女朋友，啦啦啦啦啦啦啦啦啦啦", "一天前");
-        NoteEntry note3 = new NoteEntry(3, "数据3", "一天前");
-        NoteEntry note4 = new NoteEntry(4, "数据4", "一天前");
-        NoteEntry note5 = new NoteEntry(5, "数据5", "一天前");
-        NoteEntry note6 = new NoteEntry(1, "数据1", "一天前");
-        NoteEntry note7 = new NoteEntry(2, "今天好开心啊，可以约会啪啪啪了,我有一个女朋友，啦啦啦啦啦啦啦啦啦啦", "一天前");
-        NoteEntry note8 = new NoteEntry(3, "数据3", "一天前");
-        NoteEntry note9 = new NoteEntry(4, "数据4", "一天前");
-        NoteEntry note10 = new NoteEntry(5, "数据5", "一天前");
-        NoteEntry note11 = new NoteEntry(1, "数据1", "一天前");
-        NoteEntry note12 = new NoteEntry(2, "今天好开心啊，可以约会啪啪啪了,我有一个女朋友，啦啦啦啦啦啦啦啦啦啦", "一天前");
-        NoteEntry note13 = new NoteEntry(3, "数据3", "一天前");
-        NoteEntry note14 = new NoteEntry(4, "数据4", "一天前");
-        NoteEntry note15 = new NoteEntry(5, "数据5", "一天前");
-        items.add(note1);
-        items.add(note2);
-        items.add(note3);
-        items.add(note4);
-        items.add(note5);
-        items.add(note6);
-        items.add(note7);
-        items.add(note8);
-        items.add(note9);
-        items.add(note10);
-        items.add(note11);
-        items.add(note12);
-        items.add(note13);
-        items.add(note14);
-        items.add(note15);
+
+        items = liteNoteDB.queryAllNoteItem();
+        // mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onResume() {
+        initData();
+        super.onResume();
     }
 
     @Override
@@ -149,5 +155,17 @@ public class MainActivity extends BaseActivity {
         data.putExtra(Intent.EXTRA_SUBJECT, "反馈");
         data.putExtra(Intent.EXTRA_TEXT, "输入您的意见或建议！");
         startActivity(data);
+    }
+
+    /**
+     * 接受PubActivity返回结果
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

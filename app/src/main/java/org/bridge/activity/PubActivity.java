@@ -3,6 +3,7 @@ package org.bridge.activity;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -10,15 +11,24 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.bridge.db.LiteNoteDB;
 import org.bridge.entry.NoteEntry;
 import org.bridge.litenote.R;
+import org.bridge.util.DateUtil;
 import org.bridge.util.Logger;
 
 public class PubActivity extends BaseActivity {
     String TAG = "PubActivity";
+    /**
+     * 文本编辑框
+     */
     private EditText edtNoteContent;
+    /**
+     * 用于保存数据的数据库对象
+     */
+    private LiteNoteDB liteNoteDB;
     private int currentLine = 1;//当前段落
-    private StringBuffer sbContent = new StringBuffer();
+    private StringBuffer sbContent = new StringBuffer("\n");
 
 
     @Override
@@ -28,8 +38,11 @@ public class PubActivity extends BaseActivity {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         edtNoteContent = (EditText) findViewById(R.id.edtNoteContent);
+        liteNoteDB = LiteNoteDB.getInstance(this);
         NoteEntry noteEntry = getIntent().getParcelableExtra("NoteItem");//获取传递对象
-        edtNoteContent.setText(noteEntry.getContent());//设置内容
+        if (noteEntry != null) {
+            edtNoteContent.setText(noteEntry.getContent());//设置内容
+        }
         // showNoteContent("");
     }
 
@@ -98,7 +111,8 @@ public class PubActivity extends BaseActivity {
     private void addListStyle() {
         int index = edtNoteContent.getSelectionStart();//获取光标位置
         //找到插入列表的位置
-
+        Logger.d(TAG, "插入位置：" + index);
+        // sbContent.insert(index, '*');
         String content = edtNoteContent.getText().toString();
         StringBuilder sb = new StringBuilder();
         sb.append("▶");
@@ -114,4 +128,18 @@ public class PubActivity extends BaseActivity {
         edtNoteContent.setText(test);
     }
 
+    /**
+     * 在onPause方法中调用保存方法，讲文本数据保存到数据库中
+     */
+    @Override
+    protected void onPause() {
+        String content = getText();
+        if (!TextUtils.isEmpty(content)) {
+            NoteEntry noteEntry = new NoteEntry();
+            noteEntry.setContent(content);
+            noteEntry.setPubDate(DateUtil.getCurrentTime());
+            liteNoteDB.saveNoteItem(noteEntry);
+        }
+        super.onPause();
+    }
 }

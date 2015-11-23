@@ -7,10 +7,33 @@ import android.os.Parcelable;
  * 实现NoteEntry的实体类，提供getter/setter方法，和序列化方法
  */
 public class NoteEntry implements Parcelable {
+    /**
+     * 主键id
+     */
     private int id;
+    /**
+     * Note内容
+     */
     private String content;
+    /**
+     * Note的发布日期
+     */
     private String pubDate;
 
+    /**
+     * 无参构造方法
+     */
+    public NoteEntry() {
+
+    }
+
+    /**
+     * 带有参数的构造方法
+     *
+     * @param id
+     * @param content
+     * @param pubDate
+     */
     public NoteEntry(int id, String content, String pubDate) {
         this.id = id;
         this.content = content;
