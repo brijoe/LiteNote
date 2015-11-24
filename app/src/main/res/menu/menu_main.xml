@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:litenote="http://schemas.android.com/apk/res-auto">
     <!-- ActionBar的隐藏菜单-->
     <item
         android:id="@+id/action_bindEverNote"
-        android:showAsAction="never"
-        android:title="@string/bindEverNote" />
+        android:title="@string/bindEverNote"
+        litenote:showAsAction="never" />
     <item
         android:id="@+id/action_setting"
-        android:showAsAction="never"
-        android:title="@string/setting" />
+        android:title="@string/setting"
+        litenote:showAsAction="never" />
     <item
         android:id="@+id/action_feedback"
-        android:showAsAction="never"
-        android:title="@string/feedback" />
-
+        android:title="@string/feedback"
+        litenote:showAsAction="never" />
 </menu>

@@ -10,8 +10,10 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import org.bridge.adapter.NoteItemAdapter;
+import org.bridge.config.Config;
 import org.bridge.db.LiteNoteDB;
 import org.bridge.entry.NoteEntry;
 import org.bridge.litenote.R;
@@ -60,12 +62,7 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    private void initView() {
-
-    }
-
     private void init() {
-
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         //列数为两列
         int spanCount = 2;
@@ -77,21 +74,13 @@ public class MainActivity extends BaseActivity {
         liteNoteDB = LiteNoteDB.getInstance(this);
         //构建一个数据源
         initData();
-        mAdapter = new NoteItemAdapter(this, items);
-        mRecyclerView.setAdapter(mAdapter);
     }
 
     //初始化数据
     private void initData() {
-
         items = liteNoteDB.queryAllNoteItem();
-        // mAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    protected void onResume() {
-        initData();
-        super.onResume();
+        mAdapter = new NoteItemAdapter(this, items);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -129,6 +118,10 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    public void setDelActionCallback(int count) {
+        ((TextView) findViewById(R.id.delete_tips)).setText("选择了" + count + "个");
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -143,7 +136,18 @@ public class MainActivity extends BaseActivity {
      */
     public void startPubNoteIntent() {
         Intent i = new Intent(this, PubActivity.class);
-        startActivity(i);
+        startActivityForResult(i, Config.REQ_ADD);
+    }
+
+    /***
+     * 进行编辑Note的方法
+     *
+     * @param noteEntry
+     */
+    public void startEditNoteIntent(NoteEntry noteEntry) {
+        Intent i = new Intent(this, PubActivity.class);
+        i.putExtra("NoteItem", noteEntry);
+        startActivityForResult(i, Config.REQ_EDIT);
     }
 
     /**
@@ -166,6 +170,23 @@ public class MainActivity extends BaseActivity {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case Config.REQ_ADD:
+                if (resultCode == RESULT_OK) {
+                    boolean flag = data.getBooleanExtra("add", true);
+                    if (flag) {
+                        onCreate(null);//重新布局这个Activity
+                    }
+                }
+                break;
+            case Config.REQ_EDIT:
+                if (resultCode == RESULT_OK) {
+                    boolean flag = data.getBooleanExtra("edit", false);
+                    if (flag) {
+                        onCreate(null);//重新布局这个Activity
+                    }
+                }
+                break;
+        }
     }
 }

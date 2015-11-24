@@ -24,9 +24,13 @@ public class PubActivity extends BaseActivity {
      */
     private EditText edtNoteContent;
     /**
-     * 用于保存数据的数据库对象
+     * 用于数据操作的数据库对象
      */
     private LiteNoteDB liteNoteDB;
+    /**
+     * MainActivity传递的NoteEntry对象
+     */
+    private NoteEntry noteEntry;
     private int currentLine = 1;//当前段落
     private StringBuffer sbContent = new StringBuffer("\n");
 
@@ -39,7 +43,7 @@ public class PubActivity extends BaseActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         edtNoteContent = (EditText) findViewById(R.id.edtNoteContent);
         liteNoteDB = LiteNoteDB.getInstance(this);
-        NoteEntry noteEntry = getIntent().getParcelableExtra("NoteItem");//获取传递对象
+        noteEntry = getIntent().getParcelableExtra("NoteItem");//获取传递对象
         if (noteEntry != null) {
             edtNoteContent.setText(noteEntry.getContent());//设置内容
         }
@@ -89,7 +93,10 @@ public class PubActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                if (noteEntry != null)
+                    updateData();
+                else
+                    saveData();
                 break;
             case R.id.action_list:
                 addListStyle();
@@ -128,18 +135,49 @@ public class PubActivity extends BaseActivity {
         edtNoteContent.setText(test);
     }
 
-    /**
-     * 在onPause方法中调用保存方法，讲文本数据保存到数据库中
-     */
-    @Override
-    protected void onPause() {
+    private void saveData() {
+        Intent i = new Intent();
         String content = getText();
         if (!TextUtils.isEmpty(content)) {
             NoteEntry noteEntry = new NoteEntry();
             noteEntry.setContent(content);
             noteEntry.setPubDate(DateUtil.getCurrentTime());
             liteNoteDB.saveNoteItem(noteEntry);
+            i.putExtra("add", true);
+
+        } else {
+            i.putExtra("add", false);
         }
+        setResult(RESULT_OK, i);
+        finish();
+    }
+
+    private void updateData() {
+        Intent i = new Intent();
+        if (!getText().equals(noteEntry.getContent())) {
+            noteEntry.setContent(getText());
+            liteNoteDB.updateNoteItem(noteEntry);
+            i.putExtra("edit", true);
+        } else {
+            i.putExtra("edit", false);
+        }
+        setResult(RESULT_OK, i);
+        finish();
+
+    }
+
+    /**
+     * 在onPause方法中调用保存方法，讲文本数据保存到数据库中
+     */
+    @Override
+    protected void onPause() {
+//        String content = getText();
+//        if (!TextUtils.isEmpty(content)) {
+//            NoteEntry noteEntry = new NoteEntry();
+//            noteEntry.setContent(content);
+//            noteEntry.setPubDate(DateUtil.getCurrentTime());
+//            liteNoteDB.saveNoteItem(noteEntry);
+//        }
         super.onPause();
     }
 }

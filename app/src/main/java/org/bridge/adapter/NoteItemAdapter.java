@@ -1,7 +1,7 @@
 package org.bridge.adapter;
 
 import android.content.Context;
-import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.bridge.activity.PubActivity;
-import org.bridge.entry.NoteEntry;
 import org.bridge.activity.MainActivity;
+import org.bridge.entry.NoteEntry;
 import org.bridge.litenote.R;
 import org.bridge.util.DateUtil;
 
@@ -27,11 +26,17 @@ public class NoteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private static final int TYPE_ADD = 0;
     private static final int TYPE_NOTE = 1;
     private List<NoteEntry> items = new ArrayList<>();
+    private List<Integer> delItemIDs = new ArrayList<>();
+    private List<Boolean> itemDelStates = new ArrayList<>();
     private Context context;
+    private Boolean isDelActivated = false;
+    private int count = 0;
 
     public NoteItemAdapter(Context context, List<NoteEntry> items) {
         this.context = context;
         this.items = items;
+        for (int i = 0; i < items.size(); i++)
+            itemDelStates.add(false);
     }
 
     @Override
@@ -54,23 +59,29 @@ public class NoteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             final NoteEntry noteEntry = items.get(position - 1);
             TextView tvContent = ((NoteItemViewHolder) holder).getTvContent();
             TextView tvPubDate = ((NoteItemViewHolder) holder).getTvPudDate();
-            View cardNote = ((NoteItemViewHolder) holder).getCardNote();
+            final View cardNote = ((NoteItemViewHolder) holder).getCardNote();
             tvContent.setText(noteEntry.getContent());
             tvPubDate.setText(DateUtil.formatTime(noteEntry.getPubDate()));
+            //点击操作
             cardNote.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Toast.makeText(context, "点击了item", Toast.LENGTH_SHORT).show();
-                    Intent i = new Intent(context, PubActivity.class);
-                    i.putExtra("NoteItem", noteEntry);
-                    context.startActivity(i);
+                    if (!isDelActivated) {//执行跳转编辑操作
+                        ((MainActivity) context).startEditNoteIntent(noteEntry);
+                    } else {//执行点选删除操作
+                        setDelAction(cardNote, noteEntry);
+                    }
                 }
             });
+            //长按执行激活删除面板
             cardNote.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
                     Toast.makeText(context, "长按了item", Toast.LENGTH_SHORT).show();
+                    isDelActivated = true;
                     ((MainActivity) context).handleDelActionLayout(true);
+                    setDelAction(cardNote, noteEntry);
                     return true;
                 }
             });
@@ -137,5 +148,17 @@ public class NoteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public LinearLayout getCardNote() {
             return cardNote;
         }
+    }
+
+    private void setDelAction(View cardNote, NoteEntry noteEntry) {
+        cardNote.setBackgroundColor(Color.RED);
+        delItemIDs.add(noteEntry.getId());
+        count++;
+        ((MainActivity) context).setDelActionCallback(count);
+
+    }
+
+    private void performDelAction() {
+
     }
 }
