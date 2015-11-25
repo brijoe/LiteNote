@@ -12,7 +12,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.bridge.activity.MainActivity;
-import org.bridge.entry.NoteEntry;
+import org.bridge.data.LiteNoteDB;
+import org.bridge.model.NoteBean;
 import org.bridge.litenote.R;
 import org.bridge.util.DateUtil;
 
@@ -25,18 +26,19 @@ import java.util.List;
 public class NoteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_ADD = 0;
     private static final int TYPE_NOTE = 1;
-    private List<NoteEntry> items = new ArrayList<>();
+    private List<NoteBean> items = new ArrayList<>();
     private List<Integer> delItemIDs = new ArrayList<>();
-    private List<Boolean> itemDelStates = new ArrayList<>();
+    private List<Boolean> itemSelectedStates = new ArrayList<>();
+    private List<View> cardViews = new ArrayList<>();
     private Context context;
     private Boolean isDelActivated = false;
     private int count = 0;
 
-    public NoteItemAdapter(Context context, List<NoteEntry> items) {
+    public NoteItemAdapter(Context context, List<NoteBean> items) {
         this.context = context;
         this.items = items;
         for (int i = 0; i < items.size(); i++)
-            itemDelStates.add(false);
+            itemSelectedStates.add(false);
     }
 
     @Override
@@ -54,23 +56,30 @@ public class NoteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if (position > 0) {
-            final NoteEntry noteEntry = items.get(position - 1);
+            final NoteBean noteBean = items.get(position - 1);
             TextView tvContent = ((NoteItemViewHolder) holder).getTvContent();
             TextView tvPubDate = ((NoteItemViewHolder) holder).getTvPudDate();
             final View cardNote = ((NoteItemViewHolder) holder).getCardNote();
-            tvContent.setText(noteEntry.getContent());
-            tvPubDate.setText(DateUtil.formatTime(noteEntry.getPubDate()));
+            tvContent.setText(noteBean.getContent());
+            tvPubDate.setText(DateUtil.formatTime(noteBean.getPubDate()));
             //点击操作
             cardNote.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Toast.makeText(context, "点击了item", Toast.LENGTH_SHORT).show();
                     if (!isDelActivated) {//执行跳转编辑操作
-                        ((MainActivity) context).startEditNoteIntent(noteEntry);
+                        ((MainActivity) context).startEditNoteIntent(noteBean);
                     } else {//执行点选删除操作
-                        setDelAction(cardNote, noteEntry);
+                        if (!itemSelectedStates.get(position - 1)) {
+
+                            setDelAction(cardNote, noteBean, true);
+                            itemSelectedStates.set(position - 1, true);
+                        } else {
+                            setDelAction(cardNote, noteBean, false);
+                            itemSelectedStates.set(position - 1, false);
+                        }
                     }
                 }
             });
@@ -81,7 +90,14 @@ public class NoteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     Toast.makeText(context, "长按了item", Toast.LENGTH_SHORT).show();
                     isDelActivated = true;
                     ((MainActivity) context).handleDelActionLayout(true);
-                    setDelAction(cardNote, noteEntry);
+                    if (!itemSelectedStates.get(position - 1)) {
+
+                        setDelAction(cardNote, noteBean, true);
+                        itemSelectedStates.set(position - 1, true);
+                    } else {
+                        setDelAction(cardNote, noteBean, false);
+                        itemSelectedStates.set(position - 1, false);
+                    }
                     return true;
                 }
             });
@@ -150,15 +166,51 @@ public class NoteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    private void setDelAction(View cardNote, NoteEntry noteEntry) {
-        cardNote.setBackgroundColor(Color.RED);
-        delItemIDs.add(noteEntry.getId());
-        count++;
-        ((MainActivity) context).setDelActionCallback(count);
+    private void setDelAction(View cardNote, NoteBean noteEntry, Boolean isSelected) {
+        if (isSelected) {
+            cardNote.setBackgroundColor(Color.RED);
+            delItemIDs.add(noteEntry.getId());
+            cardViews.add(cardNote);
+            count++;
+
+        } else {
+            cardNote.setBackgroundColor(Color.WHITE);
+            delItemIDs.remove(new Integer(noteEntry.getId()));
+            cardViews.remove(cardNote);
+            count--;
+        }
+        count = (count < 0) ? 0 : count;
+        ((MainActivity) context).setDelActionCount(count);
 
     }
 
-    private void performDelAction() {
+    public void performDelAction(LiteNoteDB liteNoteDB) {
+        if (liteNoteDB != null) {
+            int[] delItems = new int[delItemIDs.size()];
+            for (int i = 0; i < delItemIDs.size(); i++)
+                delItems[i] = delItemIDs.get(i).intValue();
+            liteNoteDB.deleteNoteItem(delItems);
+        }
+    }
 
+    public void cancelDel() {
+        //数量为0
+        count = 0;
+        //激活标志置为false
+        isDelActivated = false;
+        //清空待删除ID集合
+        delItemIDs.clear();
+        //设置全部item为选中状态
+        for (int i = 0; i < items.size(); i++) {
+            itemSelectedStates.set(i, false);
+        }
+        //设置cardNote样式为未选中颜色
+        for (int i = 0; i < cardViews.size(); i++) {
+            cardViews.get(i).setBackgroundColor(Color.WHITE);
+        }
+    }
+
+    public int getDelCount() {
+        return count;
     }
 }

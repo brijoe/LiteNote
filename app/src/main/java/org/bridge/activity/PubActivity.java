@@ -11,11 +11,12 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import org.bridge.db.LiteNoteDB;
-import org.bridge.entry.NoteEntry;
+import org.bridge.data.LiteNoteDB;
+import org.bridge.model.NoteBean;
 import org.bridge.litenote.R;
 import org.bridge.util.DateUtil;
 import org.bridge.util.Logger;
+import org.bridge.view.ConfirmDialog;
 
 public class PubActivity extends BaseActivity {
     String TAG = "PubActivity";
@@ -30,7 +31,7 @@ public class PubActivity extends BaseActivity {
     /**
      * MainActivity传递的NoteEntry对象
      */
-    private NoteEntry noteEntry;
+    private NoteBean noteBean;
     private int currentLine = 1;//当前段落
     private StringBuffer sbContent = new StringBuffer("\n");
 
@@ -43,9 +44,10 @@ public class PubActivity extends BaseActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         edtNoteContent = (EditText) findViewById(R.id.edtNoteContent);
         liteNoteDB = LiteNoteDB.getInstance(this);
-        noteEntry = getIntent().getParcelableExtra("NoteItem");//获取传递对象
-        if (noteEntry != null) {
-            edtNoteContent.setText(noteEntry.getContent());//设置内容
+        noteBean = getIntent().getParcelableExtra("NoteItem");//获取传递对象
+        if (noteBean != null) {
+            actionBar.setTitle("编辑");
+            edtNoteContent.setText(noteBean.getContent());//设置内容
         }
         // showNoteContent("");
     }
@@ -93,7 +95,7 @@ public class PubActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if (noteEntry != null)
+                if (noteBean != null)
                     updateData();
                 else
                     saveData();
@@ -105,6 +107,12 @@ public class PubActivity extends BaseActivity {
                 startShareIntent();
                 break;
             case R.id.action_delete://删除笔记
+                new ConfirmDialog(this, new ConfirmDialog.DelCallback() {
+                    @Override
+                    public void delNoteItems() {
+                        delData();
+                    }
+                });
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -135,14 +143,17 @@ public class PubActivity extends BaseActivity {
         edtNoteContent.setText(test);
     }
 
+    /**
+     * 将数据保存到数据库
+     */
     private void saveData() {
         Intent i = new Intent();
         String content = getText();
         if (!TextUtils.isEmpty(content)) {
-            NoteEntry noteEntry = new NoteEntry();
-            noteEntry.setContent(content);
-            noteEntry.setPubDate(DateUtil.getCurrentTime());
-            liteNoteDB.saveNoteItem(noteEntry);
+            NoteBean noteBean = new NoteBean();
+            noteBean.setContent(content);
+            noteBean.setPubDate(DateUtil.getCurrentTime());
+            liteNoteDB.saveNoteItem(noteBean);
             i.putExtra("add", true);
 
         } else {
@@ -152,32 +163,34 @@ public class PubActivity extends BaseActivity {
         finish();
     }
 
+    /**
+     * 更新此条记录的内容
+     */
     private void updateData() {
         Intent i = new Intent();
-        if (!getText().equals(noteEntry.getContent())) {
-            noteEntry.setContent(getText());
-            liteNoteDB.updateNoteItem(noteEntry);
+        if (!getText().equals(noteBean.getContent())) {
+            noteBean.setContent(getText());
+            liteNoteDB.updateNoteItem(noteBean);
             i.putExtra("edit", true);
         } else {
             i.putExtra("edit", false);
         }
         setResult(RESULT_OK, i);
         finish();
-
     }
 
     /**
-     * 在onPause方法中调用保存方法，讲文本数据保存到数据库中
+     * 删除当前数据
      */
-    @Override
-    protected void onPause() {
-//        String content = getText();
-//        if (!TextUtils.isEmpty(content)) {
-//            NoteEntry noteEntry = new NoteEntry();
-//            noteEntry.setContent(content);
-//            noteEntry.setPubDate(DateUtil.getCurrentTime());
-//            liteNoteDB.saveNoteItem(noteEntry);
-//        }
-        super.onPause();
+    private void delData() {
+        Intent i = new Intent();
+        if (noteBean != null) {
+            liteNoteDB.deleteNoteItem(new int[]{noteBean.getId()});
+            i.putExtra("delete", true);
+        } else {
+            i.putExtra("delete", false);
+        }
+        setResult(RESULT_OK, i);
+        finish();
     }
 }

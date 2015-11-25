@@ -6,24 +6,24 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name">
-        <activity
-            android:name="org.bridge.activity.MainActivity"
-            android:theme="@style/AppTheme">
+        <activity android:name="org.bridge.activity.EntryActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
+            android:name="org.bridge.activity.MainActivity"
+            android:theme="@style/AppTheme"></activity>
+        <activity
             android:name="org.bridge.activity.SettingActivity"
             android:icon="@null"
             android:label="@string/setting"
-            android:theme="@style/SettingTheme"></activity>
+            android:theme="@style/SettingTheme" />
         <activity
             android:name="org.bridge.activity.PubActivity"
             android:label="@string/pub_note"
-            android:theme="@style/PubTheme"></activity>
+            android:theme="@style/PubTheme" />
     </application>
 
 </manifest>

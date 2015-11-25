@@ -1,4 +1,4 @@
-package org.bridge.db;
+package org.bridge.data;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

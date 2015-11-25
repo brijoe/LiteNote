@@ -1,12 +1,12 @@
-package org.bridge.entry;
+package org.bridge.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * 实现NoteEntry的实体类，提供getter/setter方法，和序列化方法
+ * 实现NoteBean的实体类，提供getter/setter方法，和序列化方法
  */
-public class NoteEntry implements Parcelable {
+public class NoteBean implements Parcelable {
     /**
      * 主键id
      */
@@ -23,7 +23,7 @@ public class NoteEntry implements Parcelable {
     /**
      * 无参构造方法
      */
-    public NoteEntry() {
+    public NoteBean() {
 
     }
 
@@ -34,27 +34,27 @@ public class NoteEntry implements Parcelable {
      * @param content
      * @param pubDate
      */
-    public NoteEntry(int id, String content, String pubDate) {
+    public NoteBean(int id, String content, String pubDate) {
         this.id = id;
         this.content = content;
         this.pubDate = pubDate;
     }
 
-    protected NoteEntry(Parcel in) {
+    protected NoteBean(Parcel in) {
         id = in.readInt();
         content = in.readString();
         pubDate = in.readString();
     }
 
-    public static final Creator<NoteEntry> CREATOR = new Creator<NoteEntry>() {
+    public static final Creator<NoteBean> CREATOR = new Creator<NoteBean>() {
         @Override
-        public NoteEntry createFromParcel(Parcel in) {
-            return new NoteEntry(in);
+        public NoteBean createFromParcel(Parcel in) {
+            return new NoteBean(in);
         }
 
         @Override
-        public NoteEntry[] newArray(int size) {
-            return new NoteEntry[size];
+        public NoteBean[] newArray(int size) {
+            return new NoteBean[size];
         }
     };
 

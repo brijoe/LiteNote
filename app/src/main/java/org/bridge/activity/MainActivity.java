@@ -10,19 +10,23 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.bridge.adapter.NoteItemAdapter;
 import org.bridge.config.Config;
-import org.bridge.db.LiteNoteDB;
-import org.bridge.entry.NoteEntry;
+import org.bridge.data.LiteNoteDB;
+import org.bridge.model.NoteBean;
 import org.bridge.litenote.R;
 import org.bridge.util.Logger;
+import org.bridge.view.ConfirmDialog;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
     String TAG = "info";
     /**
      * 指定菜单项要跳转的Intent
@@ -43,7 +47,7 @@ public class MainActivity extends BaseActivity {
     /**
      * NoteItem数据对象列表
      */
-    private List<NoteEntry> items = new ArrayList<>();
+    private List<NoteBean> items = new ArrayList<>();
     /**
      * 当前Activity 的ActionBar 对象
      */
@@ -52,6 +56,9 @@ public class MainActivity extends BaseActivity {
      * 需要初始化的DB对象
      */
     private LiteNoteDB liteNoteDB;
+
+    private ImageButton btnUndo;
+    private ImageButton btnDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +70,10 @@ public class MainActivity extends BaseActivity {
     }
 
     private void init() {
+        btnUndo = (ImageButton) findViewById(R.id.undo_btn);
+        btnDelete = (ImageButton) findViewById(R.id.delete_btn);
+        btnUndo.setOnClickListener(this);
+        btnDelete.setOnClickListener(this);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         //列数为两列
         int spanCount = 2;
@@ -118,17 +129,25 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    public void setDelActionCallback(int count) {
+    public void setDelActionCount(int count) {
         ((TextView) findViewById(R.id.delete_tips)).setText("选择了" + count + "个");
+    }
+
+    public void delNoteItems() {
+        mAdapter.performDelAction(liteNoteDB);
+        this.onCreate(null);
+        handleDelActionLayout(false);
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             handleDelActionLayout(false);
-            return true;
+            mAdapter.cancelDel();
+            return false;
+        } else {
+            return super.onKeyDown(keyCode, event);
         }
-        return super.onKeyDown(keyCode, event);
     }
 
     /**
@@ -144,7 +163,7 @@ public class MainActivity extends BaseActivity {
      *
      * @param noteEntry
      */
-    public void startEditNoteIntent(NoteEntry noteEntry) {
+    public void startEditNoteIntent(NoteBean noteEntry) {
         Intent i = new Intent(this, PubActivity.class);
         i.putExtra("NoteItem", noteEntry);
         startActivityForResult(i, Config.REQ_EDIT);
@@ -173,19 +192,45 @@ public class MainActivity extends BaseActivity {
         switch (requestCode) {
             case Config.REQ_ADD:
                 if (resultCode == RESULT_OK) {
-                    boolean flag = data.getBooleanExtra("add", true);
-                    if (flag) {
+                    boolean flag_add = data.getBooleanExtra("add", false);
+                    boolean flag_delete = data.getBooleanExtra("delete", false);
+                    if (flag_add || flag_delete) {
                         onCreate(null);//重新布局这个Activity
                     }
                 }
                 break;
             case Config.REQ_EDIT:
                 if (resultCode == RESULT_OK) {
-                    boolean flag = data.getBooleanExtra("edit", false);
-                    if (flag) {
+                    boolean flag_edit = data.getBooleanExtra("edit", false);
+                    boolean flag_delete = data.getBooleanExtra("delete", false);
+                    if (flag_edit || flag_delete) {
                         onCreate(null);//重新布局这个Activity
                     }
                 }
+                break;
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.undo_btn:
+                handleDelActionLayout(false);
+                mAdapter.cancelDel();
+                break;
+            case R.id.delete_btn:
+                //弹出删除确认对话框
+                if (mAdapter.getDelCount() == 0) {
+                    Toast.makeText(this, "没有选择要删除的笔记！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                new ConfirmDialog(this, new ConfirmDialog.DelCallback() {
+                    @Override
+                    public void delNoteItems() {
+
+                        MainActivity.this.delNoteItems();
+                    }
+                });
                 break;
         }
     }

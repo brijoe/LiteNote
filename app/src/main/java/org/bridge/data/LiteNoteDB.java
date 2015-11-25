@@ -1,11 +1,11 @@
-package org.bridge.db;
+package org.bridge.data;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import org.bridge.entry.NoteEntry;
+import org.bridge.model.NoteBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,13 @@ public class LiteNoteDB {
      * 数据库版本
      */
     public static final int VERSION = 1;
+    /**
+     * 数据库操作对象
+     */
     private static LiteNoteDB liteNoteDB;
+    /**
+     * SQLiteDatabase 对象，用于数据库CRUD操作
+     */
     private SQLiteDatabase db;
 
     /**
@@ -53,15 +59,15 @@ public class LiteNoteDB {
      *
      * @return
      */
-    public List<NoteEntry> queryAllNoteItem() {
-        List<NoteEntry> list = new ArrayList<NoteEntry>();
+    public List<NoteBean> queryAllNoteItem() {
+        List<NoteBean> list = new ArrayList<NoteBean>();
         Cursor cursor = db.query("Notes", null, null, null, null, null, "id desc");
         while (cursor.moveToNext()) {
-            NoteEntry noteEntry = new NoteEntry();
-            noteEntry.setId(cursor.getInt(cursor.getColumnIndex("id")));
-            noteEntry.setContent(cursor.getString(cursor.getColumnIndex("note_content")));
-            noteEntry.setPubDate(cursor.getString(cursor.getColumnIndex("note_pubdate")));
-            list.add(noteEntry);
+            NoteBean noteBean = new NoteBean();
+            noteBean.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            noteBean.setContent(cursor.getString(cursor.getColumnIndex("note_content")));
+            noteBean.setPubDate(cursor.getString(cursor.getColumnIndex("note_pubdate")));
+            list.add(noteBean);
         }
         return list;
 
@@ -70,33 +76,33 @@ public class LiteNoteDB {
     /**
      * 将NoteEntry 实例存储到数据库中
      *
-     * @param noteEntry
+     * @param noteBean
      */
-    public void saveNoteItem(NoteEntry noteEntry) {
-        if (noteEntry != null) {
+    public void saveNoteItem(NoteBean noteBean) {
+        if (noteBean != null) {
             ContentValues values = new ContentValues();
-            values.put("note_content", noteEntry.getContent());
-            values.put("note_pubdate", noteEntry.getPubDate());
+            values.put("note_content", noteBean.getContent());
+            values.put("note_pubdate", noteBean.getPubDate());
             db.insert("Notes", null, values);
         }
     }
 
     /**
-     * 更新NoteEntry 实例的内容
+     * 更新NoteBean 实例的内容
      *
-     * @param noteEntry
+     * @param noteBean
      */
-    public void updateNoteItem(NoteEntry noteEntry) {
-        if (noteEntry != null) {
+    public void updateNoteItem(NoteBean noteBean) {
+        if (noteBean != null) {
             ContentValues values = new ContentValues();
-            values.put("note_content", noteEntry.getContent());
-            db.update("Notes", values, "id=?", new String[]{String.valueOf(noteEntry.getId())});
+            values.put("note_content", noteBean.getContent());
+            db.update("Notes", values, "id=?", new String[]{String.valueOf(noteBean.getId())});
         }
 
     }
 
     /**
-     * 将NoteEntry实例从数据库中删除
+     * 将NoteBean实例从数据库中删除
      *
      * @param noteIds
      */
