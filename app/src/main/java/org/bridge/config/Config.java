@@ -1,5 +1,7 @@
 package org.bridge.config;
 
+import com.evernote.client.android.EvernoteSession;
+
 /**
  * 保存应用程序基本常量和其它配置选项
  */
@@ -9,5 +11,11 @@ public class Config {
     public static final int REQ_EDIT = 2;
     // SharedPreference键定义
     public static final String SP_START_PUB_ACT = "startPubAct";
+    public static final String SP_MAIN_ACT_CREATED="mainActCreated";
+    //印象笔记认证key,和服务配置
+    public static final String CONSUMER_KEY = "bridgegeorge-7821";
+    public static final String CONSUMER_SECRET = "fc7a7c762f719987";
+    public static final EvernoteSession.EvernoteService EVERNOTE_SERVICE = EvernoteSession.EvernoteService.SANDBOX;
+    public static final boolean SUPPORT_APP_LINKED_NOTEBOOKS = true;
 
 }

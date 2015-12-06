@@ -14,6 +14,7 @@
         <item name="android:actionBarStyle">@style/MainActionBar</item>
         <item name="android:windowActionBarOverlay">true</item>
     </style>
+
     <!--自定义的ActionBar-->
     <style name="MainActionBar" parent="@style/BaseActionBar">
         <item name="android:background">@color/colorPrimary</item>

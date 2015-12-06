@@ -49,7 +49,8 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingTop="5dp"
-        android:scrollbars="none" />
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollbars="vertical" />
 
 
 </RelativeLayout>

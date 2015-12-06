@@ -8,7 +8,7 @@ import android.view.WindowManager;
 import org.bridge.util.Logger;
 
 /**
- * Created by bridgegeorge on 15/11/15.
+ * Activity基类，用来进行调试
  */
 public class BaseActivity extends Activity {
     private String TAG = "AC_STATE";
@@ -18,7 +18,7 @@ public class BaseActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         Logger.i(TAG, CLASSNAME + "-onCreate");
         super.onCreate(savedInstanceState);
-       // setStatusBar();
+        // setStatusBar();
     }
 
     @Override

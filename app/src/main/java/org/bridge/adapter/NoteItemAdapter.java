@@ -23,6 +23,7 @@ import java.util.List;
 /**
  * 装载Note数据的适配器类
  */
+@SuppressWarnings("ALL")
 public class NoteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_ADD = 0;
     private static final int TYPE_NOTE = 1;
@@ -166,9 +167,17 @@ public class NoteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+    /**
+     * 执行删除时的动作
+     *
+     * @param cardNote
+     * @param noteEntry
+     * @param isSelected
+     */
     private void setDelAction(View cardNote, NoteBean noteEntry, Boolean isSelected) {
         if (isSelected) {
-            cardNote.setBackgroundColor(Color.RED);
+
+            cardNote.setBackgroundColor(context.getResources().getColor(R.color.grid_selected_color));
             delItemIDs.add(noteEntry.getId());
             cardViews.add(cardNote);
             count++;

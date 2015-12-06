@@ -15,7 +15,8 @@
         <TextView
             android:id="@+id/tvContent"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textColor="@color/grid_content_color" />
     </LinearLayout>
 
 
@@ -29,7 +30,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="2dp"
-            android:text="发表时间" />
+            android:text="发表时间"
+            android:textColor="@color/grid_date_color" />
 
     </LinearLayout>
 

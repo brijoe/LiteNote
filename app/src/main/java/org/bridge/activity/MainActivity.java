@@ -15,18 +15,22 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.evernote.client.android.EvernoteSession;
+import com.evernote.client.android.login.EvernoteLoginFragment;
+
 import org.bridge.adapter.NoteItemAdapter;
 import org.bridge.config.Config;
 import org.bridge.data.LiteNoteDB;
-import org.bridge.model.NoteBean;
+import org.bridge.data.LiteNoteSharedPrefs;
 import org.bridge.litenote.R;
+import org.bridge.model.NoteBean;
 import org.bridge.util.Logger;
 import org.bridge.view.ConfirmDialog;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, EvernoteLoginFragment.ResultCallback {
     String TAG = "info";
     /**
      * 指定菜单项要跳转的Intent
@@ -56,20 +60,43 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      * 需要初始化的DB对象
      */
     private LiteNoteDB liteNoteDB;
-
+    /**
+     * SharedPreference对象
+     */
+    private LiteNoteSharedPrefs liteNoteSharedPrefs;
+    /**
+     * 撤销按钮
+     */
     private ImageButton btnUndo;
+    /**
+     * 删除按钮
+     */
     private ImageButton btnDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        actionBar = getActionBar();
+        liteNoteSharedPrefs = LiteNoteSharedPrefs.getInstance(this);
+        // 读取缓存字段，决定跳转活动
+        Boolean startPrefs = liteNoteSharedPrefs.getCacheBooleanPrefs(Config.SP_START_PUB_ACT, true);
+        Boolean mainPrefs = liteNoteSharedPrefs.getCacheBooleanPrefs(Config.SP_MAIN_ACT_CREATED, false);
+        if (startPrefs && !mainPrefs) {
+            liteNoteSharedPrefs.cacheBooleanPrefs(Config.SP_MAIN_ACT_CREATED, true);
+            Intent intent = new Intent();
+            intent.setClass(this, PubActivity.class);
+            startActivity(intent);
+        }
+        //初始化
         init();
 
     }
 
+    /**
+     * 初始化控件绑定和设置方法
+     */
     private void init() {
+        actionBar = getActionBar();
         btnUndo = (ImageButton) findViewById(R.id.undo_btn);
         btnDelete = (ImageButton) findViewById(R.id.delete_btn);
         btnUndo.setOnClickListener(this);
@@ -105,6 +132,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_bindEverNote://绑定印象笔记
+                EvernoteSession.getInstance().authenticate(MainActivity.this);
                 break;
             case R.id.action_setting://打开设置界面
                 Logger.i(TAG, "点击了设置界面");
@@ -233,5 +261,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 });
                 break;
         }
+    }
+
+    @Override
+    public void onLoginFinished(boolean successful) {
+
     }
 }

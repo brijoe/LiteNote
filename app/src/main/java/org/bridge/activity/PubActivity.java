@@ -12,8 +12,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import org.bridge.data.LiteNoteDB;
-import org.bridge.model.NoteBean;
 import org.bridge.litenote.R;
+import org.bridge.model.NoteBean;
 import org.bridge.util.DateUtil;
 import org.bridge.util.Logger;
 import org.bridge.view.ConfirmDialog;
@@ -32,6 +32,7 @@ public class PubActivity extends BaseActivity {
      * MainActivity传递的NoteEntry对象
      */
     private NoteBean noteBean;
+    private String source;
     private int currentLine = 1;//当前段落
     private StringBuffer sbContent = new StringBuffer("\n");
 
@@ -45,6 +46,8 @@ public class PubActivity extends BaseActivity {
         edtNoteContent = (EditText) findViewById(R.id.edtNoteContent);
         liteNoteDB = LiteNoteDB.getInstance(this);
         noteBean = getIntent().getParcelableExtra("NoteItem");//获取传递对象
+        source = getIntent().getStringExtra("source");
+
         if (noteBean != null) {
             actionBar.setTitle("编辑");
             edtNoteContent.setText(noteBean.getContent());//设置内容
@@ -95,9 +98,9 @@ public class PubActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if (noteBean != null)
+                if (noteBean != null)//编辑
                     updateData();
-                else
+                else//发表
                     saveData();
                 break;
             case R.id.action_list:
@@ -177,6 +180,12 @@ public class PubActivity extends BaseActivity {
         }
         setResult(RESULT_OK, i);
         finish();
+    }
+
+    private void startMainIntent() {
+        saveData();
+        this.finish();
+        // startActivity(new Intent(this, MainActivity.class));
     }
 
     /**

@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 /**
- * 本地SharedPreferences数据的操作类，单例模式，
+ * 本地SharedPreferences数据的操作类，单例模式
  */
 public class LiteNoteSharedPrefs {
     /**
@@ -83,7 +83,7 @@ public class LiteNoteSharedPrefs {
      * @param sp_key
      * @return Boolean值
      */
-    public Boolean getCacheBooleanPrefs(String sp_key) {
-        return prefs.getBoolean(sp_key, true);
+    public Boolean getCacheBooleanPrefs(String sp_key, Boolean flag) {
+        return prefs.getBoolean(sp_key, flag);
     }
 }
