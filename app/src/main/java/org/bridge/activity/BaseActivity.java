@@ -18,7 +18,6 @@ public class BaseActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         Logger.i(TAG, CLASSNAME + "-onCreate");
         super.onCreate(savedInstanceState);
-        // setStatusBar();
     }
 
     @Override
@@ -57,15 +56,4 @@ public class BaseActivity extends Activity {
         super.onRestart();
     }
 
-    /**
-     * 设置Android 4.4以上版本使用沉浸式状态栏
-     */
-    private void setStatusBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            //透明状态栏
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            //透明导航栏
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        }
-    }
 }

@@ -30,7 +30,7 @@ import org.bridge.view.ConfirmDialog;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener, EvernoteLoginFragment.ResultCallback {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
     String TAG = "info";
     /**
      * 指定菜单项要跳转的Intent
@@ -79,9 +79,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         setContentView(R.layout.activity_main);
         liteNoteSharedPrefs = LiteNoteSharedPrefs.getInstance(this);
         // 读取缓存字段，决定跳转活动
-        Boolean startPrefs = liteNoteSharedPrefs.getCacheBooleanPrefs(Config.SP_START_PUB_ACT, true);
-        Boolean mainPrefs = liteNoteSharedPrefs.getCacheBooleanPrefs(Config.SP_MAIN_ACT_CREATED, false);
-        if (startPrefs && !mainPrefs) {
+        Boolean startPrefs = liteNoteSharedPrefs.getCacheBooleanPrefs(Config.SP_START_PUB_ACT, false);
+        if (startPrefs) {
             liteNoteSharedPrefs.cacheBooleanPrefs(Config.SP_MAIN_ACT_CREATED, true);
             Intent intent = new Intent();
             intent.setClass(this, PubActivity.class);
@@ -99,23 +98,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         actionBar = getActionBar();
         btnUndo = (ImageButton) findViewById(R.id.undo_btn);
         btnDelete = (ImageButton) findViewById(R.id.delete_btn);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         btnUndo.setOnClickListener(this);
         btnDelete.setOnClickListener(this);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        //列数为两列
-        int spanCount = 2;
-        mLayoutManager = new StaggeredGridLayoutManager(
-                spanCount,
-                StaggeredGridLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(mLayoutManager);
         //创建一个数据库实例
         liteNoteDB = LiteNoteDB.getInstance(this);
         //构建一个数据源
         initData();
     }
 
-    //初始化数据
+    /**
+     * 初始化RecyclerView布局并设置数据
+     */
     private void initData() {
+        //创建布局
+        mLayoutManager = new StaggeredGridLayoutManager(
+                2, StaggeredGridLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(mLayoutManager);
         items = liteNoteDB.queryAllNoteItem();
         mAdapter = new NoteItemAdapter(this, items);
         mRecyclerView.setAdapter(mAdapter);
@@ -163,7 +162,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     public void delNoteItems() {
         mAdapter.performDelAction(liteNoteDB);
-        this.onCreate(null);
+        initData();
         handleDelActionLayout(false);
     }
 
@@ -223,7 +222,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     boolean flag_add = data.getBooleanExtra("add", false);
                     boolean flag_delete = data.getBooleanExtra("delete", false);
                     if (flag_add || flag_delete) {
-                        onCreate(null);//重新布局这个Activity
+                        initData();
                     }
                 }
                 break;
@@ -232,7 +231,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     boolean flag_edit = data.getBooleanExtra("edit", false);
                     boolean flag_delete = data.getBooleanExtra("delete", false);
                     if (flag_edit || flag_delete) {
-                        onCreate(null);//重新布局这个Activity
+                        initData();
                     }
                 }
                 break;
@@ -261,10 +260,5 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 });
                 break;
         }
-    }
-
-    @Override
-    public void onLoginFinished(boolean successful) {
-
     }
 }

@@ -47,5 +47,12 @@
         <item name="android:activityOpenEnterAnimation">@anim/pub_pull_in</item>
         <item name="android:activityCloseExitAnimation">@anim/pub_pull_out</item>
     </style>
+    <!--switchButton 样式-->
+    <style name="SwitchButtonStyle">
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
 
 </resources>
