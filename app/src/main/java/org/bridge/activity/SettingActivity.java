@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -19,6 +20,7 @@ import org.bridge.config.Config;
 import org.bridge.data.LiteNoteSharedPrefs;
 import org.bridge.litenote.R;
 import org.bridge.task.GetUserInfoTask;
+import org.bridge.task.LogOutTask;
 import org.bridge.util.LogUtil;
 import org.bridge.view.ConfirmDialog;
 
@@ -147,20 +149,30 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void logout() {
-        //直接同步方法
-        boolean flag = EvernoteSession.getInstance().logOut();
-        if (flag) {
-            bindAction(false);
-        } else {
-            //解绑失败
-            Toast.makeText(this, "解绑失败，请稍后尝试~~", Toast.LENGTH_SHORT).show();
-        }
+        new LogOutTask(new LogOutTask.Callback() {
+            @Override
+            public void onCall(boolean result) {
+                if (result) {
+                    bindAction(false);
+                } else {
+                    //解绑失败
+                    Toast.makeText(SettingActivity.this, "解绑失败，请稍后尝试~~", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
 
     }
 
     private void bindAction(boolean bindFlag) {
         if (bindFlag) {
             liteNoteSharedPrefs.cacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, true);
+            String account = liteNoteSharedPrefs.getCacheStringPrefs(Config.SP_EVERNOTE_ACCOUNT);
+            if (!TextUtils.isEmpty(account)) {
+                txtBind.setText("解除与" + account + "的绑定");
+                return;
+            }
+//执行异步任务获取
             new GetUserInfoTask(this, new GetUserInfoTask.Callback() {
                 @Override
                 public void onCall(User user) {

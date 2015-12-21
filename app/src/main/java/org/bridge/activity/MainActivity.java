@@ -267,7 +267,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     MenuItem item = menu.findItem(R.id.action_bindEverNote);
                     item.setTitle("立即同步");
                     // new CreateNoteBookTask(this);
-                    new GetUserInfoTask(this);
+                    new GetUserInfoTask(this, null);
                 } else {
                     liteNoteSharedPrefs.cacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, false);
                 }

@@ -1,6 +1,5 @@
 package org.bridge.task;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import com.evernote.client.android.EvernoteSession;
@@ -9,12 +8,11 @@ import com.evernote.client.android.EvernoteSession;
  * 异步注销登录任务
  */
 public class LogOutTask extends AsyncTask<Void, Void, Boolean> {
-    Context context;
     private Callback callback;
 
-    public LogOutTask(Context context, Callback callback) {
-        this.context = context;
+    public LogOutTask(Callback callback) {
         this.callback = callback;
+        this.execute();
     }
 
     @Override

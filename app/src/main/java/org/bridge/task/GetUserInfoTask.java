@@ -6,6 +6,9 @@ import android.os.AsyncTask;
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.edam.type.User;
 
+import org.bridge.config.Config;
+import org.bridge.data.LiteNoteSharedPrefs;
+
 /**
  * 异步获取用户账户信息
  */
@@ -16,8 +19,8 @@ public class GetUserInfoTask extends AsyncTask<Void, Void, User> {
 
     public GetUserInfoTask(Context context, Callback callback) {
         this.context = context;
-        this.execute();
         this.callback = callback;
+        this.execute();
     }
 
     @Override
@@ -35,6 +38,10 @@ public class GetUserInfoTask extends AsyncTask<Void, Void, User> {
     protected void onPostExecute(User user) {
         if (callback != null) {
             callback.onCall(user);
+        }
+        if (user != null && callback == null) {
+            LiteNoteSharedPrefs liteNoteSharedPrefs = LiteNoteSharedPrefs.getInstance(context);
+            liteNoteSharedPrefs.cacheStringPrefs(Config.SP_EVERNOTE_ACCOUNT, user.getUsername());
 
         }
     }
