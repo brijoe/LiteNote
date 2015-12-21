@@ -15,7 +15,9 @@ public class LiteNoteOpenHelper extends SQLiteOpenHelper {
             "( " +
             "id integer primary key autoincrement," +
             "note_content text," +
-            "note_pubdate text" +
+            "note_pubdate text," +
+            "note_syncstate integer default 0," +
+            "note_everguid text" +
             ")";
 
     /**

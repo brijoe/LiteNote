@@ -1,11 +1,10 @@
 package org.bridge.activity;
 
 import android.app.Activity;
-import android.os.Build;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.view.WindowManager;
 
-import org.bridge.util.Logger;
+import org.bridge.util.LogUtil;
 
 /**
  * Activity基类，用来进行调试
@@ -16,43 +15,45 @@ public class BaseActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Logger.i(TAG, CLASSNAME + "-onCreate");
+        LogUtil.i(TAG, CLASSNAME + "-onCreate");
         super.onCreate(savedInstanceState);
+        //所有Activity只允许竖屏
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     @Override
     protected void onStart() {
-        Logger.i(TAG, CLASSNAME + "-onStart");
+        LogUtil.i(TAG, CLASSNAME + "-onStart");
         super.onStart();
     }
 
     @Override
     protected void onResume() {
-        Logger.i(TAG, CLASSNAME + "-onResume");
+        LogUtil.i(TAG, CLASSNAME + "-onResume");
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        Logger.i(TAG, CLASSNAME + "-onPause");
+        LogUtil.i(TAG, CLASSNAME + "-onPause");
         super.onPause();
     }
 
     @Override
     protected void onStop() {
-        Logger.i(TAG, CLASSNAME + "-onStop");
+        LogUtil.i(TAG, CLASSNAME + "-onStop");
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
-        Logger.i(TAG, CLASSNAME + "-onDestroy");
+        LogUtil.i(TAG, CLASSNAME + "-onDestroy");
         super.onDestroy();
     }
 
     @Override
     protected void onRestart() {
-        Logger.i(TAG, CLASSNAME + "-onRestart");
+        LogUtil.i(TAG, CLASSNAME + "-onRestart");
         super.onRestart();
     }
 

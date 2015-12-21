@@ -5,7 +5,7 @@ import java.security.MessageDigest;
 /**
  * 用于进行MD5加密的工具类
  */
-public final class MD5 {
+public final class MD5Util {
     static final String HEXES = "0123456789abcdef";
 
     /**

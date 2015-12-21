@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.bridge.litenote">
+    <!-- 显示顶层浮窗 -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
+        android:name="org.bridge.LiteNoteApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+        <!-- 入口Activity-->
         <activity
             android:name="org.bridge.activity.MainActivity"
             android:theme="@style/AppTheme">
@@ -15,15 +19,37 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!--设置Activity-->
         <activity
             android:name="org.bridge.activity.SettingActivity"
             android:icon="@null"
             android:label="@string/setting"
             android:theme="@style/SettingTheme" />
+        <!-- 发表新笔记的Activity-->
         <activity
             android:name="org.bridge.activity.PubActivity"
             android:label="@string/pub_note"
             android:theme="@style/PubTheme" />
+        <!--桌面Widget-->
+        <receiver android:name="org.bridge.receiver.LiteNoteWidgetProvider">
+            <intent-filter>
+
+                <!-- widget默认的事件action -->
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <!-- widget元数据,resource指的是widget的配置文件 -->
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/provider_info" />
+        </receiver>
+        <!-- 用户接收显示悬浮窗的自定义receiver-->
+        <receiver
+            android:name="org.bridge.receiver.FloatingWindowReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="org.bridge.action.SHOW_FLOATING_WINDOW" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

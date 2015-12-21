@@ -15,7 +15,7 @@ import org.bridge.data.LiteNoteDB;
 import org.bridge.litenote.R;
 import org.bridge.model.NoteBean;
 import org.bridge.util.DateUtil;
-import org.bridge.util.Logger;
+import org.bridge.util.LogUtil;
 import org.bridge.view.ConfirmDialog;
 
 public class PubActivity extends BaseActivity {
@@ -110,9 +110,9 @@ public class PubActivity extends BaseActivity {
                 startShareIntent();
                 break;
             case R.id.action_delete://删除笔记
-                new ConfirmDialog(this, new ConfirmDialog.DelCallback() {
+                new ConfirmDialog(this,"确定要删除这条笔记吗？",new ConfirmDialog.Callback() {
                     @Override
-                    public void delNoteItems() {
+                    public void perform() {
                         delData();
                     }
                 });
@@ -129,7 +129,7 @@ public class PubActivity extends BaseActivity {
     private void addListStyle() {
         int index = edtNoteContent.getSelectionStart();//获取光标位置
         //找到插入列表的位置
-        Logger.d(TAG, "插入位置：" + index);
+        LogUtil.d(TAG, "插入位置：" + index);
         // sbContent.insert(index, '*');
         String content = edtNoteContent.getText().toString();
         StringBuilder sb = new StringBuilder();
@@ -137,7 +137,7 @@ public class PubActivity extends BaseActivity {
         sb.append(content);
         edtNoteContent.setText(sb.toString());
         edtNoteContent.setSelection(edtNoteContent.getText().toString().length());
-        Logger.i(TAG, edtNoteContent.getText().toString());
+        LogUtil.i(TAG, edtNoteContent.getText().toString());
     }
 
     private void showNoteContent(String content) {

@@ -36,7 +36,7 @@
         <item name="android:windowAnimationStyle">@style/PubAnimation</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
-
+    <!--发表笔记界面样式-->
     <style name="PubActionBar" parent="@style/BaseActionBar">
         <item name="android:background">@color/colorPrimary</item>
         <item name="android:titleTextStyle">@style/BaseTitleTextStyle</item>

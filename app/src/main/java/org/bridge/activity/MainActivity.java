@@ -1,6 +1,7 @@
 package org.bridge.activity;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,7 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.evernote.client.android.EvernoteSession;
-import com.evernote.client.android.login.EvernoteLoginFragment;
 
 import org.bridge.adapter.NoteItemAdapter;
 import org.bridge.config.Config;
@@ -24,7 +24,8 @@ import org.bridge.data.LiteNoteDB;
 import org.bridge.data.LiteNoteSharedPrefs;
 import org.bridge.litenote.R;
 import org.bridge.model.NoteBean;
-import org.bridge.util.Logger;
+import org.bridge.task.GetUserInfoTask;
+import org.bridge.util.LogUtil;
 import org.bridge.view.ConfirmDialog;
 
 import java.util.ArrayList;
@@ -72,22 +73,28 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      * 删除按钮
      */
     private ImageButton btnDelete;
+    /**
+     * 表示删除操作是否被激活
+     */
+    private Boolean isDelActivated = false;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LogUtil.i(TAG, "oncreate执行");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         liteNoteSharedPrefs = LiteNoteSharedPrefs.getInstance(this);
         // 读取缓存字段，决定跳转活动
-        Boolean startPrefs = liteNoteSharedPrefs.getCacheBooleanPrefs(Config.SP_START_PUB_ACT, false);
+        boolean startPrefs = liteNoteSharedPrefs.getCacheBooleanPrefs(Config.SP_START_PUB_ACT, false);
         if (startPrefs) {
-            liteNoteSharedPrefs.cacheBooleanPrefs(Config.SP_MAIN_ACT_CREATED, true);
             Intent intent = new Intent();
             intent.setClass(this, PubActivity.class);
             startActivity(intent);
         }
         //初始化
         init();
+        // invalidateOptionsMenu();
 
     }
 
@@ -122,8 +129,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        LogUtil.i(TAG, "菜单项构造执行");
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
+        this.menu = menu;
+        //读取印象笔记绑定字段，决定菜单显示
+        Boolean bindPrefs = liteNoteSharedPrefs.getCacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, false);
+        if (bindPrefs) {
+            MenuItem menuItem = menu.findItem(R.id.action_bindEverNote);
+            menuItem.setTitle(R.string.syncNow);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -131,10 +146,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_bindEverNote://绑定印象笔记
-                EvernoteSession.getInstance().authenticate(MainActivity.this);
+                if (liteNoteSharedPrefs.getCacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, false)) {
+                    //已经绑定成功，执行同步任务
+
+                } else {
+                    //尚未绑定，执行绑定
+                    EvernoteSession.getInstance().authenticate(MainActivity.this);
+
+                }
                 break;
             case R.id.action_setting://打开设置界面
-                Logger.i(TAG, "点击了设置界面");
+                LogUtil.i(TAG, "点击了设置界面");
                 i.setClass(this, SettingActivity.class);
                 startActivity(i);//页面跳转
                 break;
@@ -150,10 +172,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void handleDelActionLayout(Boolean activated) {
         if (activated) {
             actionBar.hide();
-            this.onResume();
+            // this.onResume();
         } else {
             actionBar.show();
         }
+        isDelActivated = activated;
     }
 
     public void setDelActionCount(int count) {
@@ -168,13 +191,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && isDelActivated) {
             handleDelActionLayout(false);
             mAdapter.cancelDel();
             return false;
-        } else {
+        } else
             return super.onKeyDown(keyCode, event);
-        }
     }
 
     /**
@@ -235,9 +257,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     }
                 }
                 break;
+            //印象笔记绑定回调
+            case EvernoteSession.REQUEST_CODE_LOGIN:
+                LogUtil.i(TAG, "印象笔记绑定回调");
+                if (resultCode == Activity.RESULT_OK) {
+                    // handle success
+                    // MenuItem item = (MenuItem) findViewById(R.id.action_bindEverNote);
+                    liteNoteSharedPrefs.cacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, true);
+                    MenuItem item = menu.findItem(R.id.action_bindEverNote);
+                    item.setTitle("立即同步");
+                    // new CreateNoteBookTask(this);
+                    new GetUserInfoTask(this);
+                } else {
+                    liteNoteSharedPrefs.cacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, false);
+                }
+                break;
         }
     }
 
+    /**
+     * view 点击事件处理
+     *
+     * @param v
+     */
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -251,14 +293,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     Toast.makeText(this, "没有选择要删除的笔记！", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                new ConfirmDialog(this, new ConfirmDialog.DelCallback() {
+                new ConfirmDialog(this, "确定要删除吗？", new ConfirmDialog.Callback() {
                     @Override
-                    public void delNoteItems() {
+                    public void perform() {
 
-                        MainActivity.this.delNoteItems();
+                        delNoteItems();
                     }
                 });
                 break;
         }
     }
+
+
 }

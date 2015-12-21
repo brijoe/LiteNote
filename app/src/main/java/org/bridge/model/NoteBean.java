@@ -19,6 +19,14 @@ public class NoteBean implements Parcelable {
      * Note的发布日期
      */
     private String pubDate;
+    /**
+     * 印象笔记同步状态（0（本地添加但尚未同步），1（本地添加且同步成功），2（本地已删除，，））
+     */
+    private int sycState;
+    /**
+     * 印象笔记中笔记的guid标识码
+     */
+    private String everGuid;
 
     /**
      * 无参构造方法
@@ -79,6 +87,7 @@ public class NoteBean implements Parcelable {
     }
 
     public String getContent() {
+
         return content;
     }
 
@@ -87,10 +96,28 @@ public class NoteBean implements Parcelable {
     }
 
     public String getPubDate() {
+
         return pubDate;
     }
 
     public void setPubDate(String pubDate) {
+
         this.pubDate = pubDate;
+    }
+
+    public String getEverGuid() {
+        return everGuid;
+    }
+
+    public void setEverGuid(String everGuid) {
+        this.everGuid = everGuid;
+    }
+
+    public int getSycState() {
+        return sycState;
+    }
+
+    public void setSycState(int sycState) {
+        this.sycState = sycState;
     }
 }

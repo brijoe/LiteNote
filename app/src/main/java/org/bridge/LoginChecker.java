@@ -1,4 +1,4 @@
-package org.bridge.view;
+package org.bridge;
 
 import android.app.Activity;
 import android.app.Application;

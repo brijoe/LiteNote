@@ -44,19 +44,19 @@ public class DateUtil {
                     timeDeltaStr = "昨天";
                 else
                     timeDeltaStr = day + "天 前";
-                Logger.i(TAG, timeDeltaStr);
+                LogUtil.i(TAG, timeDeltaStr);
                 return timeDeltaStr;
             } else if (hour > 0) {
                 timeDeltaStr = hour + "小时 前";
-                Logger.i(TAG, timeDeltaStr);
+                LogUtil.i(TAG, timeDeltaStr);
                 return timeDeltaStr;
             } else if (min > 0) {
                 timeDeltaStr = min + "分钟 前";
-                Logger.i(TAG, timeDeltaStr);
+                LogUtil.i(TAG, timeDeltaStr);
                 return timeDeltaStr;
             } else {
                 timeDeltaStr = s + "秒 前";
-                Logger.i(TAG, timeDeltaStr);
+                LogUtil.i(TAG, timeDeltaStr);
                 return timeDeltaStr;
             }
         } catch (ParseException e) {

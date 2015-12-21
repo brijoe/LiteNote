@@ -5,7 +5,7 @@ import android.util.Log;
 /**
  * 日志工具类，用于日志打印控制
  */
-public final class Logger {
+public final class LogUtil {
     public static final int VERBOSE = 1;
     public static final int DEBUG = 2;
     public static final int INFO = 3;

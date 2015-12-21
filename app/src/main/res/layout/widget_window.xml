@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0e000000"
+    android:orientation="vertical">
+
+    <org.bridge.view.CustomEditText
+        android:id="@+id/edtPub1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffffff"
+        android:gravity="top|left"
+        android:hint="添加笔记"
+        android:padding="10dp"
+        android:textColor="#000" />
+
+</LinearLayout>

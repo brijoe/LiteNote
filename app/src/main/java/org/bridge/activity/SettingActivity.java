@@ -1,22 +1,32 @@
 package org.bridge.activity;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.evernote.client.android.EvernoteSession;
+import com.evernote.edam.type.User;
 import com.kyleduo.switchbutton.SwitchButton;
 
 import org.bridge.config.Config;
 import org.bridge.data.LiteNoteSharedPrefs;
 import org.bridge.litenote.R;
+import org.bridge.task.GetUserInfoTask;
+import org.bridge.util.LogUtil;
+import org.bridge.view.ConfirmDialog;
 
 /**
  * 设置界面Activity
  */
 public class SettingActivity extends BaseActivity implements View.OnClickListener {
+    String TAG = "settingActivity";
     /**
      * sharedPreferences对象
      */
@@ -25,6 +35,18 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
      * 用于控制是否每次启动打开新便签的SwitchButton
      */
     private SwitchButton switchButton;
+    /**
+     * 绑定设置的文本信息
+     */
+    private TextView txtBind;
+    /**
+     * 点击绑定设置的viewGroup区域
+     */
+    private LinearLayout vgBind;
+    /**
+     * 绑定是否成功的标志
+     */
+    private Boolean bindFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,16 +56,28 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
     }
 
     /**
-     * 初始化控件绑定和设置方法å
+     * 初始化控件绑定和设置方法
      */
     private void init() {
+        //ActionBar 设置向上返回
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+        //控件绑定
         liteNoteSharedPrefs = LiteNoteSharedPrefs.getInstance(this);
         switchButton = (SwitchButton) findViewById(R.id.sb_use_toggle);
+        txtBind = (TextView) findViewById(R.id.bind_text);
+        vgBind = (LinearLayout) findViewById(R.id.bind_evernote);
+        //事件监听器设置
+        switchButton.setOnClickListener(this);
+        vgBind.setOnClickListener(this);
+
+        //switchButton 设置
         Boolean startFlag = liteNoteSharedPrefs.getCacheBooleanPrefs(Config.SP_START_PUB_ACT, false);
         switchButton.setChecked(startFlag);
-        switchButton.setOnClickListener(this);
+        //绑定设置项文字动态设定
+        bindFlag = liteNoteSharedPrefs.getCacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, false);
+        bindAction(bindFlag);
+
     }
 
     /**
@@ -75,10 +109,74 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
      */
     @Override
     public void onClick(View v) {
+        //重新获取绑定标识
+        bindFlag = liteNoteSharedPrefs.getCacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, false);
         switch (v.getId()) {
+            case R.id.bind_evernote:
+                if (bindFlag) {
+                    //已经绑定，执行解绑
+                    new ConfirmDialog(this, "确定要解除绑定吗？", new ConfirmDialog.Callback() {
+                        @Override
+                        public void perform() {
+                            logout();
+                        }
+                    });
+                } else {
+                    //尚未绑定，执行绑定
+                    EvernoteSession.getInstance().authenticate(this);
+                }
+
+                break;
             case R.id.sb_use_toggle:
                 liteNoteSharedPrefs.cacheBooleanPrefs(Config.SP_START_PUB_ACT, switchButton.isChecked());
                 break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            //印象笔记绑定回调
+            case EvernoteSession.REQUEST_CODE_LOGIN:
+                LogUtil.i(TAG, "印象笔记绑定回调");
+                if (resultCode == Activity.RESULT_OK) {
+                    bindAction(true);
+                }
+                break;
+        }
+    }
+
+    private void logout() {
+        //直接同步方法
+        boolean flag = EvernoteSession.getInstance().logOut();
+        if (flag) {
+            bindAction(false);
+        } else {
+            //解绑失败
+            Toast.makeText(this, "解绑失败，请稍后尝试~~", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void bindAction(boolean bindFlag) {
+        if (bindFlag) {
+            liteNoteSharedPrefs.cacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, true);
+            new GetUserInfoTask(this, new GetUserInfoTask.Callback() {
+                @Override
+                public void onCall(User user) {
+                    if (user != null) {
+                        txtBind.setText("解除与" + user.getUsername() + "的绑定");
+                        liteNoteSharedPrefs.cacheStringPrefs(Config.SP_EVERNOTE_ACCOUNT, user.getUsername());
+                        LogUtil.i(TAG, user.getUsername());
+                    } else
+                        Toast.makeText(SettingActivity.this, "获取账号信息失败~", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+        } else {
+            liteNoteSharedPrefs.cacheStringPrefs(Config.SP_EVERNOTE_ACCOUNT, null);
+            liteNoteSharedPrefs.cacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, false);
+            txtBind.setText("自动同步到印象笔记");
         }
     }
 }
