@@ -13,6 +13,7 @@
         android:gravity="top|left"
         android:hint="添加笔记"
         android:padding="10dp"
-        android:textColor="#000" />
+        android:textColor="#000"
+        android:textColorHint="@color/colorGray" />
 
 </LinearLayout>

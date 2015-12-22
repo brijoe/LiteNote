@@ -158,7 +158,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.action_setting://打开设置界面
                 LogUtil.i(TAG, "点击了设置界面");
                 i.setClass(this, SettingActivity.class);
-                startActivity(i);//页面跳转
+                startActivityForResult(i, Config.REQ_BIND);
                 break;
             case R.id.action_feedback://添加反馈
                 startSendEmailIntent();
@@ -230,7 +230,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     /**
-     * 接受PubActivity返回结果
+     * Activity返回结果
      *
      * @param requestCode
      * @param resultCode
@@ -257,20 +257,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     }
                 }
                 break;
+            case Config.REQ_BIND:
+                if (resultCode == RESULT_OK) {
+                    //设置绑定文字
+                    setBindItemText(data.getBooleanExtra("bindFlag", false));
+                }
+                break;
             //印象笔记绑定回调
             case EvernoteSession.REQUEST_CODE_LOGIN:
                 LogUtil.i(TAG, "印象笔记绑定回调");
                 if (resultCode == Activity.RESULT_OK) {
-                    // handle success
-                    // MenuItem item = (MenuItem) findViewById(R.id.action_bindEverNote);
                     liteNoteSharedPrefs.cacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, true);
-                    MenuItem item = menu.findItem(R.id.action_bindEverNote);
-                    item.setTitle("立即同步");
+                    setBindItemText(true);
                     // new CreateNoteBookTask(this);
                     new GetUserInfoTask(this, null);
                 } else {
                     liteNoteSharedPrefs.cacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, false);
                 }
+                break;
+            default:
                 break;
         }
     }
@@ -301,6 +306,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     }
                 });
                 break;
+        }
+    }
+
+    /**
+     * 根据传入的绑定标识动态设置item文字内容
+     *
+     * @param flag
+     */
+    private void setBindItemText(boolean flag) {
+        MenuItem item = menu.findItem(R.id.action_bindEverNote);
+        if (flag) {
+            item.setTitle("立即同步");
+
+        } else {
+            item.setTitle("绑定印象笔记");
         }
     }
 

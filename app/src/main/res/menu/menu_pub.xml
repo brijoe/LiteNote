@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:litenote="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_list"
         android:icon="@mipmap/list"
-        android:title="@string/menu_list"
-        litenote:showAsAction="ifRoom" />
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_list" />
     <item
         android:id="@+id/action_share"
-        android:title="@string/menu_share"
-        litenote:showAsAction="never" />
+        android:showAsAction="never"
+        android:title="@string/menu_share" />
     <item
         android:id="@+id/action_delete"
-        android:title="@string/menu_delete"
-        litenote:showAsAction="never" />
+        android:showAsAction="never"
+        android:title="@string/menu_delete" />
 </menu>

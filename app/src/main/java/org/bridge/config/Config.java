@@ -9,6 +9,7 @@ public class Config {
     //请求码定义
     public static final int REQ_ADD = 1;
     public static final int REQ_EDIT = 2;
+    public static final int REQ_BIND = 3;
     // SharedPreference键定义
     public static final String SP_START_PUB_ACT = "startPubAct";
     public static final String SP_EVERNOTE_BIND_FLAG = "everNoteBindFlag";

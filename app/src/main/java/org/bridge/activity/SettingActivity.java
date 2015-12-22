@@ -98,6 +98,10 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                //把绑定结果回传给MainActivity
+                Intent i = new Intent();
+                i.putExtra("bindFlag", liteNoteSharedPrefs.getCacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, false));
+                setResult(RESULT_OK, i);
                 finish();
                 break;
         }

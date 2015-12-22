@@ -69,7 +69,7 @@ public class NoteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             cardNote.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context, "点击了item", Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(context, "点击了item", Toast.LENGTH_SHORT).show();
                     if (!isDelActivated) {//执行跳转编辑操作
                         ((MainActivity) context).startEditNoteIntent(noteBean);
                     } else {//执行点选删除操作
@@ -88,7 +88,7 @@ public class NoteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             cardNote.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    Toast.makeText(context, "长按了item", Toast.LENGTH_SHORT).show();
+                    //  Toast.makeText(context, "长按了item", Toast.LENGTH_SHORT).show();
                     isDelActivated = true;
                     ((MainActivity) context).handleDelActionLayout(true);
                     if (!itemSelectedStates.get(position - 1)) {
@@ -132,7 +132,7 @@ public class NoteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             btnAddNote.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context, "添加", Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(context, "添加", Toast.LENGTH_SHORT).show();
                     ((MainActivity) context).startPubNoteIntent();
                 }
             });
