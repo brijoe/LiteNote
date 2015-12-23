@@ -8,6 +8,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -19,7 +20,7 @@ import org.bridge.util.LogUtil;
 import org.bridge.view.ConfirmDialog;
 
 public class PubActivity extends BaseActivity {
-    String TAG = "PubActivity";
+    String TAG = "PubEvent";
     /**
      * 文本编辑框
      */
@@ -33,6 +34,7 @@ public class PubActivity extends BaseActivity {
      */
     private NoteBean noteBean;
     private String source;
+    private boolean listFlag = false;
     private int currentLine = 1;//当前段落
     private StringBuffer sbContent = new StringBuffer("\n");
 
@@ -52,7 +54,19 @@ public class PubActivity extends BaseActivity {
             actionBar.setTitle("编辑");
             edtNoteContent.setText(noteBean.getContent());//设置内容
         }
-        // showNoteContent("");
+        edtNoteContent.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    Toast.makeText(PubActivity.this,
+                            "YOU CLICKED ENTER KEY",
+                            Toast.LENGTH_LONG).show();
+                    enterKeyAction();
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     /**
@@ -64,23 +78,6 @@ public class PubActivity extends BaseActivity {
         intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
         intent.putExtra(Intent.EXTRA_TEXT, edtNoteContent.getText().toString());
         startActivity(Intent.createChooser(intent, "选择要分享到的APP"));
-    }
-
-    /**
-     * 监听键盘回车事件
-     *
-     * @param event
-     * @return
-     */
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-            Toast.makeText(this,
-                    "YOU CLICKED ENTER KEY",
-                    Toast.LENGTH_LONG).show();
-            sbContent.append(getText()).append("\n");
-        }
-        return super.dispatchKeyEvent(event);
     }
 
     private String getText() {
@@ -110,7 +107,7 @@ public class PubActivity extends BaseActivity {
                 startShareIntent();
                 break;
             case R.id.action_delete://删除笔记
-                new ConfirmDialog(this,"确定要删除这条笔记吗？",new ConfirmDialog.Callback() {
+                new ConfirmDialog(this, "确定要删除这条笔记吗？", new ConfirmDialog.Callback() {
                     @Override
                     public void perform() {
                         delData();
@@ -131,19 +128,79 @@ public class PubActivity extends BaseActivity {
         //找到插入列表的位置
         LogUtil.d(TAG, "插入位置：" + index);
         // sbContent.insert(index, '*');
-        String content = edtNoteContent.getText().toString();
-        StringBuilder sb = new StringBuilder();
-        sb.append("▶");
-        sb.append(content);
+
+        StringBuilder sb = new StringBuilder(getText());
+        if (isListCanDo(index)) {
+            //设置当前行列表样式
+            for (int i = index - 1; i >= 0; i--) {
+                if (getText().charAt(i - 1) == '\n') {
+                    sb.insert(i, "▪");
+                    index++;
+                    break;
+                } else if (i == 1) {
+                    sb.insert(0, "▪");
+                    index++;
+                    break;
+                }
+            }
+        } else {
+            //取消当前行列表样式
+            for (int i = index - 1; i >= 0; i--) {
+                if (getText().charAt(i) == '▪') {
+                    sb.replace(i, i + 1, "");
+                    index--;
+                    break;
+                }
+            }
+        }
         edtNoteContent.setText(sb.toString());
-        edtNoteContent.setSelection(edtNoteContent.getText().toString().length());
-        LogUtil.i(TAG, edtNoteContent.getText().toString());
+        edtNoteContent.setSelection(index);
+        LogUtil.i(TAG, getText());
+    }
+
+    /**
+     * 根据传入的光标索引，判断当前行是否可以设置列表样式
+     *
+     * @param index
+     * @return true 可以设置列表样式，false 不能设置列表样式
+     */
+    private boolean isListCanDo(int index) {
+        //判断当前段落是要取消样式还是设置样式
+        int brIndex = getText().lastIndexOf("\n", index - 1);
+        //找到换行符，不在第一行
+        if (brIndex != -1) {
+            return (getText().charAt(brIndex + 1) != '▪');
+        }
+        //未找到换行符，在第一行
+        else
+            return (getText().charAt(0) != '▪');
+
+    }
+
+    private void enterKeyAction() {
+
+        int index = edtNoteContent.getSelectionStart();//获取光标位置
+        //找到插入列表的位置
+        LogUtil.d(TAG, "键盘回车事件-插入位置：" + index);
+        StringBuilder sb = new StringBuilder(getText());
+        if (!isListCanDo(index)) {
+            sb.insert(index, "\n▪");
+            index += 2;
+        } else {
+            sb.insert(index, "\n");
+            index++;
+
+        }
+        edtNoteContent.setText(sb.toString());
+        edtNoteContent.setSelection(index);
+        LogUtil.i(TAG, getText());
     }
 
     private void showNoteContent(String content) {
 
         String test = "第一行abc\n逗比";
         edtNoteContent.setText(test);
+        edtNoteContent.setSelection(getText().length());
     }
 
     /**
