@@ -55,13 +55,13 @@ public class LiteNoteDB {
     }
 
     /**
-     * 从数据库中查询所有的Note记录
+     * 从数据库中查询可以显示所有的Note记录
      *
      * @return
      */
     public List<NoteBean> queryAllNoteItem() {
         List<NoteBean> list = new ArrayList<NoteBean>();
-        Cursor cursor = db.query("Notes", null, null, null, null, null, "id desc");
+        Cursor cursor = db.rawQuery("select * from Notes where note_syncstate=? or note_syncstate=? order by id desc", new String[]{"0", "1"});
         while (cursor.moveToNext()) {
             NoteBean noteBean = new NoteBean();
             noteBean.setId(cursor.getInt(cursor.getColumnIndex("id")));
@@ -69,6 +69,7 @@ public class LiteNoteDB {
             noteBean.setPubDate(cursor.getString(cursor.getColumnIndex("note_pubdate")));
             list.add(noteBean);
         }
+        cursor.close();
         return list;
 
     }
@@ -96,6 +97,7 @@ public class LiteNoteDB {
         if (noteBean != null) {
             ContentValues values = new ContentValues();
             values.put("note_content", noteBean.getContent());
+            values.put("note_syncstate", noteBean.getSycState());
             db.update("Notes", values, "id=?", new String[]{String.valueOf(noteBean.getId())});
         }
 

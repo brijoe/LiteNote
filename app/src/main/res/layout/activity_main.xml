@@ -40,6 +40,15 @@
             android:background="@mipmap/btn_delete" />
     </LinearLayout>
 
+    <ProgressBar
+        android:id="@+id/sync_progress"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_below="@id/undo_panel"
+        android:layout_marginTop="2dp"
+        android:indeterminateDrawable="@anim/ic_progress_indeterminate"
+        android:visibility="gone" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"

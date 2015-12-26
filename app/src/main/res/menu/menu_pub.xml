@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_list"
-        android:icon="@mipmap/list"
+        android:icon="@mipmap/ic_list"
         android:showAsAction="ifRoom"
         android:title="@string/menu_list" />
     <item

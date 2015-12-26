@@ -4,13 +4,14 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import org.bridge.data.LiteNoteDB;
 import org.bridge.litenote.R;
@@ -33,10 +34,6 @@ public class PubActivity extends BaseActivity {
      * MainActivity传递的NoteEntry对象
      */
     private NoteBean noteBean;
-    private String source;
-    private boolean listFlag = false;
-    private int currentLine = 1;//当前段落
-    private StringBuffer sbContent = new StringBuffer("\n");
 
 
     @Override
@@ -48,8 +45,6 @@ public class PubActivity extends BaseActivity {
         edtNoteContent = (EditText) findViewById(R.id.edtNoteContent);
         liteNoteDB = LiteNoteDB.getInstance(this);
         noteBean = getIntent().getParcelableExtra("NoteItem");//获取传递对象
-        source = getIntent().getStringExtra("source");
-
         if (noteBean != null) {
             actionBar.setTitle("编辑");
             edtNoteContent.setText(noteBean.getContent());//设置内容
@@ -58,9 +53,6 @@ public class PubActivity extends BaseActivity {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
-                    Toast.makeText(PubActivity.this,
-                            "YOU CLICKED ENTER KEY",
-                            Toast.LENGTH_LONG).show();
                     enterKeyAction();
                     return true;
                 }
@@ -76,14 +68,25 @@ public class PubActivity extends BaseActivity {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
-        intent.putExtra(Intent.EXTRA_TEXT, edtNoteContent.getText().toString());
+        intent.putExtra(Intent.EXTRA_TEXT, getContentText());
         startActivity(Intent.createChooser(intent, "选择要分享到的APP"));
     }
 
-    private String getText() {
+    /**
+     * 获取当前文本编辑区的内容
+     *
+     * @return 内容的String对象
+     */
+    private String getContentText() {
         return edtNoteContent.getText().toString();
     }
 
+    /**
+     * 构造菜单项
+     *
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -91,14 +94,17 @@ public class PubActivity extends BaseActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * 菜单项被选择时的响应
+     *
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if (noteBean != null)//编辑
-                    updateData();
-                else//发表
-                    saveData();
+                handleDataOnExit();
                 break;
             case R.id.action_list:
                 addListStyle();
@@ -125,37 +131,25 @@ public class PubActivity extends BaseActivity {
      */
     private void addListStyle() {
         int index = edtNoteContent.getSelectionStart();//获取光标位置
-        //找到插入列表的位置
-        LogUtil.d(TAG, "插入位置：" + index);
-        // sbContent.insert(index, '*');
-
-        StringBuilder sb = new StringBuilder(getText());
+        LogUtil.d(TAG, "光标位置：" + index);
+        StringBuilder sb = new StringBuilder(getContentText());
+        int brIndex = getContentText().lastIndexOf("\n", index - 1);
+        int listDotIndex = (brIndex == -1) ? 0 : brIndex + 1;
+        LogUtil.i(TAG, "当前行列表标志：" + isListCanDo(index) + "，brIndex=" + brIndex + "listDotIndex=" + listDotIndex);
         if (isListCanDo(index)) {
             //设置当前行列表样式
-            for (int i = index - 1; i >= 0; i--) {
-                if (getText().charAt(i - 1) == '\n') {
-                    sb.insert(i, "▪");
-                    index++;
-                    break;
-                } else if (i == 1) {
-                    sb.insert(0, "▪");
-                    index++;
-                    break;
-                }
-            }
+            sb.insert(listDotIndex, "▪");
+            index++;
+            LogUtil.d(TAG, "执行插入列表符");
         } else {
             //取消当前行列表样式
-            for (int i = index - 1; i >= 0; i--) {
-                if (getText().charAt(i) == '▪') {
-                    sb.replace(i, i + 1, "");
-                    index--;
-                    break;
-                }
-            }
+            sb.replace(listDotIndex, listDotIndex + 1, "");
+            index--;
+            LogUtil.d(TAG, "取消当前列表符");
         }
         edtNoteContent.setText(sb.toString());
         edtNoteContent.setSelection(index);
-        LogUtil.i(TAG, getText());
+        LogUtil.i(TAG, getContentText());
     }
 
     /**
@@ -166,23 +160,23 @@ public class PubActivity extends BaseActivity {
      */
     private boolean isListCanDo(int index) {
         //判断当前段落是要取消样式还是设置样式
-        int brIndex = getText().lastIndexOf("\n", index - 1);
-        //找到换行符，不在第一行
-        if (brIndex != -1) {
-            return (getText().charAt(brIndex + 1) != '▪');
-        }
-        //未找到换行符，在第一行
+        int brIndex = getContentText().lastIndexOf("\n", index - 1);
+        int listDotIndex = (brIndex == -1) ? 0 : brIndex + 1;
+        LogUtil.d(TAG, "isListCanDo---" + listDotIndex + "");
+        if (!TextUtils.isEmpty(getContentText()) && listDotIndex < getContentText().length())
+            return getContentText().charAt(listDotIndex) != '▪';
         else
-            return (getText().charAt(0) != '▪');
-
+            return true;
     }
 
+    /**
+     * 按下键盘回车键时执行的换行操作
+     */
     private void enterKeyAction() {
 
         int index = edtNoteContent.getSelectionStart();//获取光标位置
-        //找到插入列表的位置
-        LogUtil.d(TAG, "键盘回车事件-插入位置：" + index);
-        StringBuilder sb = new StringBuilder(getText());
+        LogUtil.d(TAG, "键盘回车事件-光标位置：" + index);
+        StringBuilder sb = new StringBuilder(getContentText());
         if (!isListCanDo(index)) {
             sb.insert(index, "\n▪");
             index += 2;
@@ -193,22 +187,25 @@ public class PubActivity extends BaseActivity {
         }
         edtNoteContent.setText(sb.toString());
         edtNoteContent.setSelection(index);
-        LogUtil.i(TAG, getText());
-    }
-
-    private void showNoteContent(String content) {
-
-        String test = "第一行abc\n逗比";
-        edtNoteContent.setText(test);
-        edtNoteContent.setSelection(getText().length());
+        LogUtil.i(TAG, getContentText());
     }
 
     /**
-     * 将数据保存到数据库
+     * 当退出当前Activity时执行的数据处理操作
+     */
+    private void handleDataOnExit() {
+        if (noteBean != null)//编辑
+            updateData();
+        else//发表
+            saveData();
+    }
+
+    /**
+     * 新增，数据将数据保存到数据库
      */
     private void saveData() {
         Intent i = new Intent();
-        String content = getText();
+        String content = getContentText();
         if (!TextUtils.isEmpty(content)) {
             NoteBean noteBean = new NoteBean();
             noteBean.setContent(content);
@@ -228,8 +225,8 @@ public class PubActivity extends BaseActivity {
      */
     private void updateData() {
         Intent i = new Intent();
-        if (!getText().equals(noteBean.getContent())) {
-            noteBean.setContent(getText());
+        if (!getContentText().equals(noteBean.getContent())) {
+            noteBean.setContent(getContentText());
             liteNoteDB.updateNoteItem(noteBean);
             i.putExtra("edit", true);
         } else {
@@ -237,12 +234,6 @@ public class PubActivity extends BaseActivity {
         }
         setResult(RESULT_OK, i);
         finish();
-    }
-
-    private void startMainIntent() {
-        saveData();
-        this.finish();
-        // startActivity(new Intent(this, MainActivity.class));
     }
 
     /**
@@ -258,5 +249,17 @@ public class PubActivity extends BaseActivity {
         }
         setResult(RESULT_OK, i);
         finish();
+    }
+
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        boolean softkeyShow = (getWindow().getAttributes().softInputMode == WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED);
+        //返回键按下而且软件盘处于隐藏状态执行退出数据处理
+        if (keyCode == KeyEvent.KEYCODE_BACK && softkeyShow) {
+            handleDataOnExit();
+            LogUtil.d(TAG, "返回键退出触发");
+        }
+        return super.onKeyUp(keyCode, event);
     }
 }
