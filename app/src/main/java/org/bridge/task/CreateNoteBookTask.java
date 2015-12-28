@@ -53,7 +53,7 @@ public class CreateNoteBookTask extends AsyncTask<Void, Void, Notebook> {
     @Override
     protected void onPostExecute(Notebook notebook) {
         if (notebook != null) {
-            liteNoteSharedPrefs.cacheStringPrefs(Config.EVERNOTE_NOTEBOOK_GUID, notebook.getGuid());
+            liteNoteSharedPrefs.cacheStringPrefs(Config.SP_EVERNOTE_NOTEBOOK_GUID, notebook.getGuid());
             Toast.makeText(context, "创建成功！", Toast.LENGTH_SHORT).show();
         } else
             Toast.makeText(context, "创建失败！", Toast.LENGTH_SHORT).show();

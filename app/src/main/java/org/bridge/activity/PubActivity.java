@@ -4,7 +4,6 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,6 +12,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 
+import org.bridge.config.Config;
 import org.bridge.data.LiteNoteDB;
 import org.bridge.litenote.R;
 import org.bridge.model.NoteBean;
@@ -48,6 +48,7 @@ public class PubActivity extends BaseActivity {
         if (noteBean != null) {
             actionBar.setTitle("编辑");
             edtNoteContent.setText(noteBean.getContent());//设置内容
+            LogUtil.d(TAG, "noteBean-" + noteBean.getId() + " " + noteBean.getSyncState() + " " + noteBean.getEverGuid());
         }
         edtNoteContent.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -209,7 +210,9 @@ public class PubActivity extends BaseActivity {
         if (!TextUtils.isEmpty(content)) {
             NoteBean noteBean = new NoteBean();
             noteBean.setContent(content);
+            noteBean.setSyncState(Config.ST_ADD_NOT_SYNC);
             noteBean.setPubDate(DateUtil.getCurrentTime());
+            noteBean.setModifyTime(DateUtil.getTimestamp());
             liteNoteDB.saveNoteItem(noteBean);
             i.putExtra("add", true);
 
@@ -224,9 +227,14 @@ public class PubActivity extends BaseActivity {
      * 更新此条记录的内容
      */
     private void updateData() {
+        LogUtil.d(TAG, "执行更新记录-" + noteBean.getEverGuid());
         Intent i = new Intent();
         if (!getContentText().equals(noteBean.getContent())) {
+            LogUtil.d(TAG, "内容变动-" + noteBean.getEverGuid());
             noteBean.setContent(getContentText());
+            noteBean.setModifyTime(DateUtil.getTimestamp());
+            if (noteBean.getSyncState() == Config.ST_ADD_AND_SYNC)
+                noteBean.setSyncState(Config.ST_UPDATE_NOT_SYNC);
             liteNoteDB.updateNoteItem(noteBean);
             i.putExtra("edit", true);
         } else {

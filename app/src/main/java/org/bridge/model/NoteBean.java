@@ -20,9 +20,13 @@ public class NoteBean implements Parcelable {
      */
     private String pubDate;
     /**
-     * 印象笔记同步状态（0（本地添加但尚未同步），1（本地添加且同步成功），2（本地已删除，，））
+     * 修改时间
      */
-    private int sycState;
+    private String modifyTime;
+    /**
+     * 印象笔记同步状态
+     */
+    private int syncState;
     /**
      * 印象笔记中笔记的guid标识码
      */
@@ -35,24 +39,15 @@ public class NoteBean implements Parcelable {
 
     }
 
-    /**
-     * 带有参数的构造方法
-     *
-     * @param id
-     * @param content
-     * @param pubDate
-     */
-    public NoteBean(int id, String content, String pubDate) {
-        this.id = id;
-        this.content = content;
-        this.pubDate = pubDate;
-    }
-
     protected NoteBean(Parcel in) {
         id = in.readInt();
         content = in.readString();
         pubDate = in.readString();
+        modifyTime = in.readString();
+        syncState = in.readInt();
+        everGuid = in.readString();
     }
+
 
     public static final Creator<NoteBean> CREATOR = new Creator<NoteBean>() {
         @Override
@@ -76,33 +71,17 @@ public class NoteBean implements Parcelable {
         dest.writeInt(id);
         dest.writeString(content);
         dest.writeString(pubDate);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+        dest.writeString(modifyTime);
+        dest.writeInt(syncState);
+        dest.writeString(everGuid);
     }
 
     public String getContent() {
-
         return content;
     }
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public String getPubDate() {
-
-        return pubDate;
-    }
-
-    public void setPubDate(String pubDate) {
-
-        this.pubDate = pubDate;
     }
 
     public String getEverGuid() {
@@ -113,11 +92,35 @@ public class NoteBean implements Parcelable {
         this.everGuid = everGuid;
     }
 
-    public int getSycState() {
-        return sycState;
+    public int getId() {
+        return id;
     }
 
-    public void setSycState(int sycState) {
-        this.sycState = sycState;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(String pubDate) {
+        this.pubDate = pubDate;
+    }
+
+    public String getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(String modifyTime) {
+        this.modifyTime = modifyTime;
+    }
+
+    public int getSyncState() {
+        return syncState;
+    }
+
+    public void setSyncState(int syncState) {
+        this.syncState = syncState;
     }
 }

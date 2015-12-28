@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ import org.bridge.data.LiteNoteSharedPrefs;
 import org.bridge.litenote.R;
 import org.bridge.model.NoteBean;
 import org.bridge.task.GetUserInfoTask;
+import org.bridge.task.SyncNoteListTask;
 import org.bridge.util.LogUtil;
 import org.bridge.view.ConfirmDialog;
 
@@ -76,6 +78,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     /**
      * 表示删除操作是否被激活
      */
+    private ProgressBar pb;
     private Boolean isDelActivated = false;
     private Menu menu;
 
@@ -106,6 +109,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         btnUndo = (ImageButton) findViewById(R.id.undo_btn);
         btnDelete = (ImageButton) findViewById(R.id.delete_btn);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        pb = (ProgressBar) findViewById(R.id.sync_progress);
         btnUndo.setOnClickListener(this);
         btnDelete.setOnClickListener(this);
         //创建一个数据库实例
@@ -122,7 +126,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mLayoutManager = new StaggeredGridLayoutManager(
                 2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        items = liteNoteDB.queryAllNoteItem();
+        items = liteNoteDB.queryShowStateNoteItem();
         mAdapter = new NoteItemAdapter(this, items);
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -148,7 +152,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.action_bindEverNote://绑定印象笔记
                 if (liteNoteSharedPrefs.getCacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, false)) {
                     //已经绑定成功，执行同步任务
+                    new SyncNoteListTask(this, liteNoteDB.queryAllStateNoteItem(), new SyncNoteListTask.SyncCallBack() {
+                        @Override
+                        public void onPreSync() {
+                            pb.setVisibility(View.VISIBLE);
+                        }
 
+                        @Override
+                        public void onPostSync(Boolean result) {
+                            pb.setVisibility(View.GONE);
+                            if (!result) {
+                                Toast.makeText(MainActivity.this, "同步失败，请稍后再试~！", Toast.LENGTH_SHORT).show();
+                            } else {
+                                initData();
+                            }
+                        }
+                    });
                 } else {
                     //尚未绑定，执行绑定
                     EvernoteSession.getInstance().authenticate(MainActivity.this);
@@ -210,11 +229,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     /***
      * 进行编辑Note的方法
      *
-     * @param noteEntry
+     * @param noteBean
      */
-    public void startEditNoteIntent(NoteBean noteEntry) {
+    public void startEditNoteIntent(NoteBean noteBean) {
         Intent i = new Intent(this, PubActivity.class);
-        i.putExtra("NoteItem", noteEntry);
+        i.putExtra("NoteItem", noteBean);
         startActivityForResult(i, Config.REQ_EDIT);
     }
 

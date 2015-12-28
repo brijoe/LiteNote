@@ -198,7 +198,8 @@ public class NoteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             int[] delItems = new int[delItemIDs.size()];
             for (int i = 0; i < delItemIDs.size(); i++)
                 delItems[i] = delItemIDs.get(i).intValue();
-            liteNoteDB.deleteNoteItem(delItems);
+            //liteNoteDB.deleteNoteItem(delItems);
+            liteNoteDB.setNotesDelState(delItems);
         }
     }
 

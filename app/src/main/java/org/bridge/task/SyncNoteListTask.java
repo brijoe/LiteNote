@@ -14,55 +14,65 @@ import com.evernote.edam.type.Notebook;
 import org.bridge.config.Config;
 import org.bridge.data.LiteNoteDB;
 import org.bridge.model.NoteBean;
+import org.bridge.util.LogUtil;
 
 import java.util.List;
 
 
 public class SyncNoteListTask extends AsyncTask<List<NoteBean>, Void, Boolean> {
+    private final String TAG = "syncNote";
     private Context context;
     private LiteNoteDB liteNoteDB;
     private EvernoteNoteStoreClient noteStoreClient;
-    public SyncNoteListTask(Context context, LiteNoteDB liteNoteDB, List<NoteBean> notes) {
+    private SyncCallBack syncCallBack;
+
+    public SyncNoteListTask(Context context, List<NoteBean> notes, SyncCallBack syncCallBack) {
         this.context = context;
-        this.liteNoteDB = liteNoteDB;
+        this.liteNoteDB = LiteNoteDB.getInstance(context);
+        this.syncCallBack = syncCallBack;
         this.execute(notes);
 
     }
 
     @Override
+    protected void onPreExecute() {
+        LogUtil.d(TAG, "onPreExecute 执行");
+        if (syncCallBack != null)
+            syncCallBack.onPreSync();
+    }
+
+    @Override
     protected Boolean doInBackground(List<NoteBean>... params) {
+        LogUtil.d(TAG, "doInBackground 执行");
         this.noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
-        String LiteNoteBookGuid = null;
         List<NoteBean> noteBeans = params[0];
         try {
-            //获取属于liteNote的印象笔记Guid标识码
-            List<Notebook> notebooks = noteStoreClient.listNotebooks();
-            for (Notebook notebook : notebooks) {
-                if (notebook.getName().equals(Config.EVERNOTE_NOTEBOOK)) {
-                    LiteNoteBookGuid = notebook.getGuid();
-                    break;
-                }
-            }
-            //根据本地笔记状态执行相应的同步操作
-            for (int i = 0; i < noteBeans.size(); i++) {
-                switch (noteBeans.get(i).getSycState()) {
-                    case Config.ST_ADD_NOT_SYNC:
-                        //执行同步添加操作
-                        createEverNote(noteBeans.get(i), LiteNoteBookGuid);
-                        break;
-                    case Config.ST_UPDATE_NOT_SYNC:
-                        //执行同步更新操作
-                        updateEverNote(noteBeans.get(i));
-                        break;
-                    case Config.ST_DEL_NOT_SYNC:
-                        //执行同步删除操作
-                        delEverNote(noteBeans.get(i));
-                        break;
-                    default:
-                        break;
+            Notebook notebook = createNoteBook();
+            if (notebook == null)
+                return false;
+            else
+                //根据本地笔记状态执行相应的同步操作
+                for (int i = 0; i < noteBeans.size(); i++) {
+                    NoteBean noteBean = noteBeans.get(i);
+                    switch (noteBean.getSyncState()) {
+                        case Config.ST_ADD_NOT_SYNC:
+                            //执行同步添加操作
+                            createEverNote(noteBean, notebook.getGuid());
+                            break;
+                        case Config.ST_UPDATE_NOT_SYNC:
+                            LogUtil.d(TAG, "同步更新执行");
+                            //执行同步更新操作
+                            updateEverNote(noteBean);
+                            break;
+                        case Config.ST_DEL_NOT_SYNC:
+                            //执行同步删除操作
+                            delEverNote(noteBean);
+                            break;
+                        default:
+                            break;
 
+                    }
                 }
-            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -72,10 +82,30 @@ public class SyncNoteListTask extends AsyncTask<List<NoteBean>, Void, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean result) {
-        if (result)
-            Toast.makeText(context, "测试笔记创建成功！", Toast.LENGTH_SHORT).show();
-        else
-            Toast.makeText(context, "测试笔记创建失败！", Toast.LENGTH_SHORT).show();
+        LogUtil.d(TAG, "onPostExecute 执行");
+        if (syncCallBack != null)
+            syncCallBack.onPostSync(result);
+
+    }
+
+    private Notebook createNoteBook() {
+        noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
+        try {
+            //检查是否已经创建笔记本
+            List<Notebook> notebooks = noteStoreClient.listNotebooks();
+            for (Notebook notebook : notebooks) {
+                if (notebook.getName().equals(Config.EVERNOTE_NOTEBOOK))
+                    return notebook;
+            }
+            //未创建则重新创建笔记本
+            Notebook notebook = new Notebook();
+            notebook.setName(Config.EVERNOTE_NOTEBOOK);
+            return noteStoreClient.createNotebook(notebook);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogUtil.d(TAG, e.getMessage());
+            return null;
+        }
 
     }
 
@@ -97,7 +127,7 @@ public class SyncNoteListTask extends AsyncTask<List<NoteBean>, Void, Boolean> {
         note = noteStoreClient.createNote(note);
         //更新本地笔记状态
         noteBean.setEverGuid(note.getGuid());
-        noteBean.setSycState(Config.ST_ADD_AND_SYNC);
+        noteBean.setSyncState(Config.ST_ADD_AND_SYNC);
         liteNoteDB.updateNoteItem(noteBean);
     }
 
@@ -109,14 +139,13 @@ public class SyncNoteListTask extends AsyncTask<List<NoteBean>, Void, Boolean> {
      */
     private void updateEverNote(NoteBean noteBean) throws Exception {
         String noteGuid = noteBean.getEverGuid();
-        Note note = new Note();
-        note.setGuid(noteGuid);
+        Note note = noteStoreClient.getNote(noteGuid, false, false, false, false);
         String content = EvernoteUtil.NOTE_PREFIX
                 + noteBean.getContent()
                 + EvernoteUtil.NOTE_SUFFIX;
         note.setContent(content);
         note = noteStoreClient.updateNote(note);
-        noteBean.setSycState(Config.ST_UPDATE_AND_SYNC);
+        noteBean.setSyncState(Config.ST_UPDATE_AND_SYNC);
         liteNoteDB.updateNoteItem(noteBean);
 
     }
@@ -127,10 +156,24 @@ public class SyncNoteListTask extends AsyncTask<List<NoteBean>, Void, Boolean> {
      * @param noteBean
      * @throws Exception
      */
-    private void delEverNote(NoteBean noteBean) throws Exception {
+    private void delEverNote(final NoteBean noteBean) throws Exception {
         String noteGuid = noteBean.getEverGuid();
-        noteStoreClient.deleteNote(noteGuid);
-        noteBean.setSycState(Config.ST_DEL_AND_SYNC);
-        liteNoteDB.updateNoteItem(noteBean);
+        noteStoreClient.deleteNoteAsync(noteGuid, new EvernoteCallback<Integer>() {
+            @Override
+            public void onSuccess(Integer result) {
+                liteNoteDB.deleteNoteItem(new int[]{noteBean.getId()});
+            }
+
+            @Override
+            public void onException(Exception exception) {
+
+            }
+        });
+    }
+
+    public interface SyncCallBack {
+        void onPreSync();
+
+        void onPostSync(Boolean result);
     }
 }

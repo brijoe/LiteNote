@@ -11,6 +11,15 @@ public class DateUtil {
     private static final String TAG = "DateUtil";
 
     /**
+     * 获取当前的时间戳
+     *
+     * @return
+     */
+    public static String getTimestamp() {
+        return String.valueOf(new Date().getTime());
+    }
+
+    /**
      * 按照格式获取当前时间
      *
      * @return 格式化后的当前时间
@@ -55,7 +64,7 @@ public class DateUtil {
                 LogUtil.i(TAG, timeDeltaStr);
                 return timeDeltaStr;
             } else {
-                timeDeltaStr = s + "秒 前";
+                timeDeltaStr = "刚刚";
                 LogUtil.i(TAG, timeDeltaStr);
                 return timeDeltaStr;
             }

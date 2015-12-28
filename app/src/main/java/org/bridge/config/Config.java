@@ -21,18 +21,16 @@ public class Config {
     public static final int ST_UPDATE_AND_SYNC = 3;
     //本地删除，但未同步
     public static final int ST_DEL_NOT_SYNC = 4;
-    //本地删除，且同步删除成功
-    public static final int ST_DEL_AND_SYNC = 5;
     // SharedPreference键定义
     public static final String SP_START_PUB_ACT = "startPubAct";
-    public static final String SP_EVERNOTE_BIND_FLAG = "everNoteBindFlag";
     public static final String SP_EVERNOTE_ACCOUNT = "everNoteAccount";
+    public static final String SP_EVERNOTE_BIND_FLAG = "everNoteBindFlag";
+    public static final String SP_EVERNOTE_NOTEBOOK_GUID = "noteBookGuid";
     //印象笔记认证key,和服务配置
     public static final String CONSUMER_KEY = "bridgegeorge-7821";
     public static final String CONSUMER_SECRET = "fc7a7c762f719987";
-    public static final EvernoteSession.EvernoteService EVERNOTE_SERVICE = EvernoteSession.EvernoteService.SANDBOX;
 
+    public static final EvernoteSession.EvernoteService EVERNOTE_SERVICE = EvernoteSession.EvernoteService.SANDBOX;
     public static final boolean SUPPORT_APP_LINKED_NOTEBOOKS = true;
     public static final String EVERNOTE_NOTEBOOK = "LiteNote";
-    public static final String EVERNOTE_NOTEBOOK_GUID = "noteBookGuid";
 }

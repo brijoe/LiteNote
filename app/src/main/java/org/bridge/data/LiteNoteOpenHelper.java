@@ -11,14 +11,20 @@ public class LiteNoteOpenHelper extends SQLiteOpenHelper {
     /**
      * 建表语句
      */
-    public static final String CREATE_NOTE = "create table Notes " +
-            "( " +
-            "id integer primary key autoincrement," +
-            "note_content text," +
-            "note_pubdate text," +
-            "note_syncstate integer default 0," +
-            "note_everguid text" +
-            ")";
+    public static final String CREATE_NOTE =
+            "create table " + LiteNoteDBConstants.TABLE_NOTES +
+                    "( " + LiteNoteDBConstants.NOTE_ID +
+                    " integer primary key autoincrement," +
+                    LiteNoteDBConstants.NOTE_CONTENT +
+                    " text," +
+                    LiteNoteDBConstants.NOTE_PUBDATE +
+                    " text," +
+                    LiteNoteDBConstants.NOTE_MODIFYTIME +
+                    " text," +
+                    LiteNoteDBConstants.NOTE_SYNCSTATE +
+                    " integer default 0," +
+                    LiteNoteDBConstants.NOTE_EVERGUID +
+                    " text)";
 
     /**
      * 构造方法
