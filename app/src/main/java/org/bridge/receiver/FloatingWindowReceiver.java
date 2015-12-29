@@ -7,7 +7,7 @@ import android.content.Intent;
 import org.bridge.view.FloatingWindowManager;
 
 /**
- * Created by bridgegeorge on 15/12/14.
+ * 自定义的广播接收器用于接收悬浮窗显示广播
  */
 public class FloatingWindowReceiver extends BroadcastReceiver {
     @Override

@@ -53,6 +53,8 @@ public class PubActivity extends BaseActivity {
         edtNoteContent.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                LogUtil.d(TAG, "键盘执行事件");
                 if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
                     enterKeyAction();
                     return true;

@@ -8,8 +8,10 @@ import android.view.View;
 import android.view.WindowManager;
 
 import org.bridge.litenote.R;
+import org.bridge.util.LogUtil;
 
 public class FloatingWindowManager {
+    private static String TAG = "floatingWindow";
     /**
      * 用于控制在屏幕上添加或移除悬浮窗
      */
@@ -36,7 +38,7 @@ public class FloatingWindowManager {
      * @param context
      */
     public static void createFloatWindow(Context context) {
-
+        LogUtil.d(TAG, "创建悬浮窗");
         WindowManager wm = getWindowManager(context);
         //获取屏幕尺寸
         DisplayMetrics dm = context.getResources().getDisplayMetrics();
@@ -45,7 +47,7 @@ public class FloatingWindowManager {
             if (params == null) {
                 params = new WindowManager.LayoutParams();
                 // 设置window 属性
-                params.type = WindowManager.LayoutParams.TYPE_PHONE;
+                params.type = WindowManager.LayoutParams.TYPE_TOAST;
                 params.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
                 // 设置悬浮窗的长得宽
                 params.width = dm.widthPixels * 9 / 10;
@@ -66,6 +68,7 @@ public class FloatingWindowManager {
      */
     public static void closeFloatWindow(Context context) {
         if (floatInputWindow != null) {
+            LogUtil.d(TAG, "移除悬浮窗");
             WindowManager wm = getWindowManager(context);
             wm.removeView(floatInputWindow);
             floatInputWindow = null;

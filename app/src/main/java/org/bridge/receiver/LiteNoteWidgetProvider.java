@@ -1,32 +1,26 @@
 package org.bridge.receiver;
 
 import android.app.PendingIntent;
-import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import org.bridge.activity.MainActivity;
 import org.bridge.activity.PubActivity;
 import org.bridge.litenote.R;
-import org.bridge.view.FloatingWindowManager;
+import org.bridge.util.LogUtil;
 
+/**
+ * widget小部件定义
+ */
 public class LiteNoteWidgetProvider extends AppWidgetProvider {
     private final String ACTION = "org.bridge.action.SHOW_FLOATING_WINDOW";
+    private final String TAG = "LiteNoteWidgetProvider";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-//        if (intent.getAction().equals(ACTION)) {
-//            Toast.makeText(context, "弹出了！！！！", Toast.LENGTH_SHORT).show();
-//            FloatingWindowManager.createFloatWindow(context);
-//        }
-//        Log.i("yao", "HelloWidgetProvider --> onReceive");
         super.onReceive(context, intent);
     }
 
@@ -41,7 +35,7 @@ public class LiteNoteWidgetProvider extends AppWidgetProvider {
             PendingIntent pendingIntent2 = PendingIntent.getActivity(context, 0, intent2, 0);
             Intent intent3 = new Intent(context, FloatingWindowReceiver.class);
             intent3.setAction(ACTION);
-            PendingIntent pendingIntent3 = PendingIntent.getBroadcast(context, 0, intent3, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent3 = PendingIntent.getBroadcast(context, 0, intent3, 0);
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
             views.setOnClickPendingIntent(R.id.btnStartPub, pendingIntent1);
             views.setOnClickPendingIntent(R.id.tvStartMain, pendingIntent2);
@@ -59,7 +53,7 @@ public class LiteNoteWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onDeleted(Context context, int[] appWidgetIds) {
-        Log.i("yao", "HelloWidgetProvider --> onDeleted");
+        LogUtil.i(TAG, "WidgetProvider --> onDeleted");
         super.onDeleted(context, appWidgetIds);
     }
 
@@ -70,7 +64,7 @@ public class LiteNoteWidgetProvider extends AppWidgetProvider {
      */
     @Override
     public void onEnabled(Context context) {
-        Log.i("yao", "HelloWidgetProvider --> onEnabled");
+        LogUtil.i(TAG, "WidgetProvider --> onEnabled");
         super.onEnabled(context);
     }
 
@@ -79,10 +73,9 @@ public class LiteNoteWidgetProvider extends AppWidgetProvider {
      *
      * @param context
      */
-    //
     @Override
     public void onDisabled(Context context) {
-        Log.i("yao", "HelloWidgetProvider --> onDisabled");
+        LogUtil.i(TAG, "WidgetProvider --> onDisabled");
         super.onDisabled(context);
     }
 
