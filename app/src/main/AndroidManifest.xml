@@ -8,27 +8,41 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-        <!-- 入口Activity-->
+
+        <!-- 入口Activity -->
         <activity
             android:name="org.bridge.activity.MainActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--设置Activity-->
+        <!-- 设置Activity -->
         <activity
             android:name="org.bridge.activity.SettingActivity"
             android:icon="@null"
             android:label="@string/setting"
             android:theme="@style/SettingTheme" />
-        <!-- 发表新笔记的Activity-->
+        <!-- 发表新笔记的Activity -->
         <activity
             android:name="org.bridge.activity.PubActivity"
             android:label="@string/pub_note"
             android:theme="@style/PubTheme" />
-        <!--桌面Widget-->
+
+        <!--接受外部应用的数据分享的Activity-->
+        <activity
+            android:name="org.bridge.activity.RecSendActivity"
+            android:theme="@style/RecTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
+        </activity>
+        <!-- 桌面Widget -->
         <receiver android:name="org.bridge.receiver.LiteNoteWidgetProvider">
             <intent-filter>
 
@@ -40,7 +54,7 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/provider_info" />
         </receiver>
-        <!-- 用户接收显示悬浮窗的自定义receiver-->
+        <!-- 用户接收显示悬浮窗的自定义receiver -->
         <receiver
             android:name="org.bridge.receiver.FloatingWindowReceiver"
             android:exported="false">
@@ -48,6 +62,7 @@
                 <action android:name="org.bridge.action.SHOW_FLOATING_WINDOW" />
             </intent-filter>
         </receiver>
+
     </application>
 
 </manifest>

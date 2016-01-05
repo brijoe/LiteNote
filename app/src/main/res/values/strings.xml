@@ -13,5 +13,6 @@
     <string name="one_delete">选择了1个</string>
     <string name="menu_list">列表样式</string>
     <string name="syncNow">立即同步</string>
+    <string name="title_activity_rec_send">RecSendActivity</string>
 
 </resources>
