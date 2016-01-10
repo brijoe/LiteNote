@@ -97,8 +97,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
         //初始化
         init();
-        // invalidateOptionsMenu();
-
     }
 
     /**
@@ -241,11 +239,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      * 发送反馈邮件的方法
      */
     private void startSendEmailIntent() {
-        Intent data = new Intent(Intent.ACTION_SENDTO);
-        data.setData(Uri.parse("mailto:1650730996@qq.com"));
-        data.putExtra(Intent.EXTRA_SUBJECT, "反馈");
-        data.putExtra(Intent.EXTRA_TEXT, "输入您的意见或建议！");
-        startActivity(data);
+        Intent Email = new Intent(Intent.ACTION_SEND);
+        Email.setType("text/email");
+        Email.putExtra(Intent.EXTRA_EMAIL,
+                new String[]{"1650730996@qq.com"});
+        Email.putExtra(Intent.EXTRA_SUBJECT, "反馈");
+        Email.putExtra(Intent.EXTRA_TEXT, "输入您的意见或建议!");
+        startActivity(Intent.createChooser(Email,
+                "选择发送方式"));
     }
 
     /**

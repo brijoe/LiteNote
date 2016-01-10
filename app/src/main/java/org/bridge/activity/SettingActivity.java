@@ -2,10 +2,13 @@ package org.bridge.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -88,10 +91,16 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
      * @param v
      */
     public void startCommitIntent(View v) {
+        LogUtil.d(TAG, "startCommitIntent");
         String str = "market://details?id=" + getPackageName();
         Intent localIntent = new Intent("android.intent.action.VIEW");
         localIntent.setData(Uri.parse(str));
-        startActivity(localIntent);
+        if (getPackageManager().resolveActivity(localIntent, PackageManager.MATCH_DEFAULT_ONLY) != null) {
+            startActivity(localIntent);
+        } else {
+            Toast.makeText(this, "无法打开市场，请手动尝试~~", Toast.LENGTH_SHORT).show();
+            LogUtil.d(TAG, "未找到匹配的隐式Intent");
+        }
     }
 
     @Override

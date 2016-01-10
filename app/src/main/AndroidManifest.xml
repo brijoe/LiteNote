@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.bridge.litenote">
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:name="org.bridge.LiteNoteApp"
         android:allowBackup="true"
@@ -34,7 +37,8 @@
         <!--接受外部应用的数据分享的Activity-->
         <activity
             android:name="org.bridge.activity.RecSendActivity"
-            android:theme="@style/RecTheme">
+            android:theme="@style/RecTheme"
+            android:windowSoftInputMode="stateVisible|adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />

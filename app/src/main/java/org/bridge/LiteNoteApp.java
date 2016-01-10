@@ -5,6 +5,7 @@ import android.app.Application;
 import com.evernote.client.android.EvernoteSession;
 
 import org.bridge.config.Config;
+import org.bridge.util.CrashHandler;
 
 
 public class LiteNoteApp extends Application {
@@ -23,8 +24,10 @@ public class LiteNoteApp extends Application {
 //                .setLocale(Locale.SIMPLIFIED_CHINESE)
                 .build(Config.CONSUMER_KEY, Config.CONSUMER_SECRET)
                 .asSingleton();
+        //初始化全部异常捕获器
+        CrashHandler crashHandler=CrashHandler.getIntance();
+        crashHandler.init(this);
 
-        registerActivityLifecycleCallbacks(new LoginChecker());
     }
 }
 

@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 import android.app.AlertDialog;
 
 /**
- * Created by bridgegeorge on 15/11/25.
+ * 自定义对话框
  */
 public class ConfirmDialog {
 
