@@ -25,6 +25,7 @@ import org.bridge.data.LiteNoteDB;
 import org.bridge.data.LiteNoteSharedPrefs;
 import org.bridge.litenote.R;
 import org.bridge.model.NoteBean;
+import org.bridge.service.SyncService;
 import org.bridge.task.GetUserInfoTask;
 import org.bridge.task.SyncNoteListTask;
 import org.bridge.util.LogUtil;
@@ -150,7 +151,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.action_bindEverNote://绑定印象笔记
                 if (liteNoteSharedPrefs.getCacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, false)) {
                     //已经绑定成功，执行同步任务
-                    new SyncNoteListTask(this, liteNoteDB.queryAllStateNoteItem(), new SyncNoteListTask.SyncCallBack() {
+                    new SyncNoteListTask(this,new SyncNoteListTask.SyncCallBack() {
                         @Override
                         public void onPreSync() {
                             pb.setVisibility(View.VISIBLE);
@@ -290,7 +291,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     liteNoteSharedPrefs.cacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, true);
                     setBindItemText(true);
                     // new CreateNoteBookTask(this);
+                    //获取用户信息
                     new GetUserInfoTask(this, null);
+                    //开启自动同步后台任务
+                    Intent intent = new Intent(this, SyncService.class);
+                    startService(intent);
                 } else {
                     liteNoteSharedPrefs.cacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, false);
                 }

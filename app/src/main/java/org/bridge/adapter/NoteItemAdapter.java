@@ -16,6 +16,7 @@ import org.bridge.data.LiteNoteDB;
 import org.bridge.model.NoteBean;
 import org.bridge.litenote.R;
 import org.bridge.util.DateUtil;
+import org.bridge.view.CustomTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -143,14 +144,14 @@ public class NoteItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
      * 用于Note item内容的ViewHolder
      */
     class NoteItemViewHolder extends RecyclerView.ViewHolder {
-        TextView tvContent;
+        CustomTextView tvContent;
         TextView tvPudDate;
         LinearLayout cardNote;
 
         public NoteItemViewHolder(View itemView) {
             super(itemView);
             cardNote = (LinearLayout) itemView.findViewById(R.id.cardNote);
-            tvContent = (TextView) itemView.findViewById(R.id.tvContent);
+            tvContent = (CustomTextView) itemView.findViewById(R.id.tvContent);
             tvPudDate = (TextView) itemView.findViewById(R.id.tvPubDate);
         }
 

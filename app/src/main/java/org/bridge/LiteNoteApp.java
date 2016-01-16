@@ -1,6 +1,7 @@
 package org.bridge;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.evernote.client.android.EvernoteSession;
 
@@ -12,6 +13,7 @@ public class LiteNoteApp extends Application {
     /**
      * 自定义Application
      */
+    private static Context context;
 
     @Override
     public void onCreate() {
@@ -25,9 +27,21 @@ public class LiteNoteApp extends Application {
                 .build(Config.CONSUMER_KEY, Config.CONSUMER_SECRET)
                 .asSingleton();
         //初始化全部异常捕获器
-        CrashHandler crashHandler=CrashHandler.getIntance();
+        CrashHandler crashHandler = CrashHandler.getIntance();
         crashHandler.init(this);
+        //全局context获取
+        context = getAppContext();
 
+
+    }
+
+    /**
+     * 获取context 对象
+     *
+     * @return
+     */
+    public static Context getAppContext() {
+        return context;
     }
 }
 

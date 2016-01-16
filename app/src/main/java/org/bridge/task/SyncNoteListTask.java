@@ -2,7 +2,6 @@ package org.bridge.task;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.android.EvernoteUtil;
@@ -11,6 +10,7 @@ import com.evernote.client.android.asyncclient.EvernoteNoteStoreClient;
 import com.evernote.edam.type.Note;
 import com.evernote.edam.type.Notebook;
 
+import org.bridge.LiteNoteApp;
 import org.bridge.config.Config;
 import org.bridge.data.LiteNoteDB;
 import org.bridge.model.NoteBean;
@@ -18,19 +18,26 @@ import org.bridge.util.LogUtil;
 
 import java.util.List;
 
+/**
+ * 同步笔记至印象笔记服务器的异步任务类
+ */
 
 public class SyncNoteListTask extends AsyncTask<List<NoteBean>, Void, Boolean> {
     private final String TAG = "syncNote";
-    private Context context;
     private LiteNoteDB liteNoteDB;
     private EvernoteNoteStoreClient noteStoreClient;
     private SyncCallBack syncCallBack;
 
-    public SyncNoteListTask(Context context, List<NoteBean> notes, SyncCallBack syncCallBack) {
-        this.context = context;
+    public SyncNoteListTask() {
+        this.liteNoteDB = LiteNoteDB.getInstance(LiteNoteApp.getAppContext());
+        this.syncCallBack = null;
+        this.execute(liteNoteDB.queryAllStateNoteItem());
+    }
+
+    public SyncNoteListTask(Context context, SyncCallBack syncCallBack) {
         this.liteNoteDB = LiteNoteDB.getInstance(context);
         this.syncCallBack = syncCallBack;
-        this.execute(notes);
+        this.execute(liteNoteDB.queryAllStateNoteItem());
 
     }
 

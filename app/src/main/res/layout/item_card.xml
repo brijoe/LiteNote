@@ -12,11 +12,12 @@
         android:layout_height="wrap_content"
         android:minHeight="50dp">
 
-        <TextView
+        <org.bridge.view.CustomTextView
             android:id="@+id/tvContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/grid_content_color" />
+            android:textColor="@color/grid_content_color"
+            android:textSize="14sp" />
     </LinearLayout>
 
 

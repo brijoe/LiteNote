@@ -66,6 +66,10 @@
                 <action android:name="org.bridge.action.SHOW_FLOATING_WINDOW" />
             </intent-filter>
         </receiver>
+        <!--后台同步任务receiver -->
+        <receiver android:name="org.bridge.receiver.SyncAlarmReceiver" />
+        <!-- 后台同步任务service-->
+        <service android:name="org.bridge.service.SyncService" />
 
     </application>
 
