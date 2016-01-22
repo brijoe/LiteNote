@@ -151,7 +151,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.action_bindEverNote://绑定印象笔记
                 if (liteNoteSharedPrefs.getCacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, false)) {
                     //已经绑定成功，执行同步任务
-                    new SyncNoteListTask(this,new SyncNoteListTask.SyncCallBack() {
+                    new SyncNoteListTask(this, new SyncNoteListTask.SyncCallBack() {
                         @Override
                         public void onPreSync() {
                             pb.setVisibility(View.VISIBLE);

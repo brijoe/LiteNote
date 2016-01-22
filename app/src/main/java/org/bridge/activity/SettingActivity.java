@@ -22,6 +22,7 @@ import com.kyleduo.switchbutton.SwitchButton;
 import org.bridge.config.Config;
 import org.bridge.data.LiteNoteSharedPrefs;
 import org.bridge.litenote.R;
+import org.bridge.service.SyncService;
 import org.bridge.task.GetUserInfoTask;
 import org.bridge.task.LogOutTask;
 import org.bridge.util.LogUtil;
@@ -156,6 +157,9 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 LogUtil.i(TAG, "印象笔记绑定回调");
                 if (resultCode == Activity.RESULT_OK) {
                     bindAction(true);
+                    //开启自动同步后台任务
+                    handleSyncService(true);
+
                 }
                 break;
         }
@@ -167,6 +171,8 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
             public void onCall(boolean result) {
                 if (result) {
                     bindAction(false);
+                    handleSyncService(false);
+
                 } else {
                     //解绑失败
                     Toast.makeText(SettingActivity.this, "解绑失败，请稍后尝试~~", Toast.LENGTH_SHORT).show();
@@ -203,5 +209,16 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
             liteNoteSharedPrefs.cacheBooleanPrefs(Config.SP_EVERNOTE_BIND_FLAG, false);
             txtBind.setText("自动同步到印象笔记");
         }
+    }
+
+    private void handleSyncService(boolean flag) {
+        //开启自动同步后台任务
+        Intent intent = new Intent(this, SyncService.class);
+        if (flag)
+            startService(intent);
+        else {
+        }
+        // stopService(intent);
+
     }
 }

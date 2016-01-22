@@ -3,7 +3,7 @@ package org.bridge.util;
 import junit.framework.TestCase;
 
 /**
- * Created by bridgegeorge on 15/11/14.
+ * 测试类
  */
 public class DateUtilTest extends TestCase {
 

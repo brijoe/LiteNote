@@ -28,13 +28,26 @@ public class SyncNoteListTask extends AsyncTask<List<NoteBean>, Void, Boolean> {
     private EvernoteNoteStoreClient noteStoreClient;
     private SyncCallBack syncCallBack;
 
+    /**
+     * 无参构造
+     */
     public SyncNoteListTask() {
+        if (!checkEverUserOnline())
+            return;
         this.liteNoteDB = LiteNoteDB.getInstance(LiteNoteApp.getAppContext());
         this.syncCallBack = null;
         this.execute(liteNoteDB.queryAllStateNoteItem());
     }
 
+    /**
+     * 有参构造
+     *
+     * @param context
+     * @param syncCallBack
+     */
     public SyncNoteListTask(Context context, SyncCallBack syncCallBack) {
+        if (!checkEverUserOnline())
+            return;
         this.liteNoteDB = LiteNoteDB.getInstance(context);
         this.syncCallBack = syncCallBack;
         this.execute(liteNoteDB.queryAllStateNoteItem());
@@ -63,15 +76,17 @@ public class SyncNoteListTask extends AsyncTask<List<NoteBean>, Void, Boolean> {
                     NoteBean noteBean = noteBeans.get(i);
                     switch (noteBean.getSyncState()) {
                         case Config.ST_ADD_NOT_SYNC:
+                            LogUtil.d(TAG, noteBean.getId() + "->执行同步添加操作");
                             //执行同步添加操作
                             createEverNote(noteBean, notebook.getGuid());
                             break;
                         case Config.ST_UPDATE_NOT_SYNC:
-                            LogUtil.d(TAG, "同步更新执行");
+                            LogUtil.d(TAG, noteBean.getId() + "->执行同步更新执行操作");
                             //执行同步更新操作
                             updateEverNote(noteBean);
                             break;
                         case Config.ST_DEL_NOT_SYNC:
+                            LogUtil.d(TAG, noteBean.getId() + "->执行同步删除操作");
                             //执行同步删除操作
                             delEverNote(noteBean);
                             break;
@@ -176,6 +191,15 @@ public class SyncNoteListTask extends AsyncTask<List<NoteBean>, Void, Boolean> {
 
             }
         });
+    }
+
+    /**
+     * 判断当前用户是否与印象笔记服务器保持连接
+     *
+     * @return
+     */
+    private boolean checkEverUserOnline() {
+        return EvernoteSession.getInstance().isLoggedIn();
     }
 
     public interface SyncCallBack {
