@@ -246,6 +246,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 new String[]{"1650730996@qq.com"});
         Email.putExtra(Intent.EXTRA_SUBJECT, "反馈");
         Email.putExtra(Intent.EXTRA_TEXT, "输入您的意见或建议!");
+        Email.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///mnt/sdcard/attach.jpg"));
         startActivity(Intent.createChooser(Email,
                 "选择发送方式"));
     }

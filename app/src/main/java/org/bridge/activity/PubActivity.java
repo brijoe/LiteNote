@@ -20,6 +20,9 @@ import org.bridge.util.DateUtil;
 import org.bridge.util.LogUtil;
 import org.bridge.view.ConfirmDialog;
 
+/**
+ * 添加新的笔记的Actvity
+ */
 public class PubActivity extends BaseActivity {
     String TAG = "PubEvent";
     /**
