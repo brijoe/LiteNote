@@ -1,6 +1,55 @@
 # LiteNote
 A note app for writing down everyday trifle.Once you get to use it,you will love it deeply.
 
+# project structure
+```
+.
+`-- org
+    `-- bridge
+        |-- LiteNoteApp.java
+        |-- activity
+        |   |-- BaseActivity.java
+        |   |-- MainActivity.java
+        |   |-- PubActivity.java
+        |   |-- RecSendActivity.java
+        |   `-- SettingActivity.java
+        |-- adapter
+        |   `-- NoteItemAdapter.java
+        |-- config
+        |   `-- Config.java
+        |-- data
+        |   |-- LiteNoteDB.java
+        |   |-- LiteNoteDBConstants.java
+        |   |-- LiteNoteOpenHelper.java
+        |   `-- LiteNoteSharedPrefs.java
+        |-- model
+        |   `-- NoteBean.java
+        |-- receiver
+        |   |-- FloatingWindowReceiver.java
+        |   |-- LiteNoteWidgetProvider.java
+        |   `-- SyncAlarmReceiver.java
+        |-- service
+        |   `-- SyncService.java
+        |-- task
+        |   |-- CreateNoteBookTask.java
+        |   |-- GetUserInfoTask.java
+        |   |-- LogOutTask.java
+        |   `-- SyncNoteListTask.java
+        |-- util
+        |   |-- CrashHandler.java
+        |   |-- DateUtil.java
+        |   |-- KeyBoardUtil.java
+        |   |-- LogUtil.java
+        |   `-- MD5Util.java
+        `-- view
+            |-- ConfirmDialog.java
+            |-- CustomEditText.java
+            |-- CustomTextView.java
+            `-- FloatingWindowManager.java
+
+
+```
+
 ##License
 ```
 
